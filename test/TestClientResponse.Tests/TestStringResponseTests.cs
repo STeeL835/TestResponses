@@ -19,6 +19,22 @@ public class TestStringResponseTests
         await testResponse.Read();
 
         testResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        testResponse.IsRead.Should().BeTrue();
         testResponse.AsString.Should().Be(text);
+    }
+    
+    [Fact]
+    public async Task ResponseNotRead_ShouldThrowException()
+    {
+        var text = "Lorem ipsum dolor sit amet";
+        
+        var httpResponse = await TestHttpClient.ReceiveResponse(r => 
+            r.Respond(MediaTypeNames.Text.Plain, text));
+        
+        var testResponse = new TestStringResponse(httpResponse);
+        var action = () => testResponse.AsString;
+
+        testResponse.IsRead.Should().BeFalse();
+        action.Should().Throw<TestResponseException>();
     }
 }

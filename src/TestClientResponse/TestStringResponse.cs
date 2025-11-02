@@ -2,19 +2,22 @@
 
 public record TestStringResponse(HttpResponseMessage Response) : TestResponse(Response)
 {
-    public string AsString { get; private set; } // TODO, TEST: exception if response is not read
+    private string? _asString;
+    public string? AsString => GetReadValue(_asString); // TODO, TEST: Response as string is always an empty string, is it?
     
-    // TODO, TEST: Check the response type header?
-    // TODO, TEST: What if response is a stream 
-
     public override async Task Read()
     {
         await ReadString();
+        IsRead = true; 
     }
 
     protected async Task ReadString()
     {
-        AsString = await Response.Content.ReadAsStringAsync();
+        _asString = await Response.Content.ReadAsStringAsync();
         // TODO: cancellationTokens?
     }
+    
+    // TODO, TEST: Check the response type header?
+    // TODO, TEST: What if response is a stream 
+    // TODO, TEST: Response as string is always an empty string, is it?
 }
