@@ -8,7 +8,7 @@
     <Project Path="src/TestClientResponse/TestClientResponse.csproj" />
   </Folder>
   <Folder Name="/test/">
-    <Project Path="test\TestClientRespones.Tests\TestClientRespones.Tests.csproj" Type="Classic C#" />
+    <Project Path="test\TestClientResponse.Tests\TestClientResponse.Tests.csproj" Type="Classic C#" />
     <File Path="test\Directory.Build.props" />
   </Folder>
 </Solution>
