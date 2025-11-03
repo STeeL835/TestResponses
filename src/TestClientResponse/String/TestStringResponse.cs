@@ -1,9 +1,9 @@
-﻿namespace TestClientResponse;
+﻿namespace TestClientResponse.String;
 
 public record TestStringResponse(HttpResponseMessage Response) : TestResponse(Response)
 {
     private string? _asString;
-    public string? AsString => GetReadValue(_asString); // TODO, TEST: Response as string is always an empty string, is it?
+    public string? AsString => GetReadValue(_asString);
     
     public override async Task Read()
     {

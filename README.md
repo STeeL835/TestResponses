@@ -7,6 +7,7 @@
 - ShouldSucceed(withStatus)
 - exception with response details
 - extensibility (exception details, custom dtos,)
+- rename to TestHttpResponse maybe
 - coverage
 - nuget package
 - try TUnit

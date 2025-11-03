@@ -6,10 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Update="TestStringResponse.cs">
-      <DependentUpon>TestClientResponse.cs</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
 </Project>
