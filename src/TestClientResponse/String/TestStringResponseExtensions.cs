@@ -8,4 +8,6 @@ public static class TestStringResponseExtensions
         await testResponse.Read();
         return testResponse;
     }
+    
+    //TODO: maybe a .ReadAs<TTestResponse>() with activation?
 }

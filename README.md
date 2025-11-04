@@ -3,12 +3,27 @@
 - TestStringResponse
 - TestStringResponseExtensions (ToTestResponse with reading)
 - TestDtoResponse
+  - indented Json response
 - TestFileResponse
 - ShouldSucceed(withStatus)
 - exception with response details
 - extensibility (exception details, custom dtos,)
-- rename to TestHttpResponse maybe
+- rename project to TestHttpResponse maybe
+- add docs 
+  - XML
+  - and Readme with concepts and how to use
 - coverage
 - nuget package
 - try TUnit
 - use netstandard for library for compatibility
+
+## Notes
+- testResponse needs to be read before using
+  - but there is an extension that makes this easy
+
+- testResponse does not fail on any status codes by default
+  - but there is a method that helps to assert _needed_ status code
+    - and exception returns useful info like statusCode and actual response
+    
+- testResponse tries to read responses, but does not fail until try to access the result? Or should we provide a way to check if everything okay without checking? 
+  - maybe ShouldSucceed should check the status AND that everything is deserialized? But how
