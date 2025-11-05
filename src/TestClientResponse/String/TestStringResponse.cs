@@ -2,13 +2,14 @@
 
 namespace TestClientResponse.String;
 
-public record TestStringResponse(HttpResponseMessage Response) : TestResponse(Response) //TODO:rename to HttpResponse
+public record TestStringResponse(HttpResponseMessage Response) : TestResponse(Response) //TODO: rename to HttpResponse
 {
     private string? _asString;
     public string? AsString => GetReadValue(_asString);
     
     public override async Task Read()
     {
+        if (IsRead) return; // TODO: Test it's not read
         await ReadString();
         IsRead = true; 
     }
