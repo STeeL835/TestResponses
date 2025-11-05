@@ -57,8 +57,9 @@ public class TestStringResponseTests
         testResponse.AsString.Should().Be(text);
     }
     
+    
     [Fact]
-    public async Task AssertionException_ShouldHaveStatusAndResponse()
+    public async Task AssertionException_ResponseIsRead_ShouldHaveStatusAndResponse()
     {
         var text = "Lorem ipsum dolor sit amet";
         
@@ -79,6 +80,27 @@ public class TestStringResponseTests
     }
     
     [Fact]
+    public async Task AssertionException_ResponseIsNotRead_ShouldHaveStatusAndResponse()
+    {
+        var text = "Lorem ipsum dolor sit amet";
+        
+        var httpResponse = await TestHttpClient.ReceiveResponse(r =>
+            r.Respond(MediaTypeNames.Text.Plain, text));
+        
+        var testResponse = new TestStringResponse(httpResponse);
+        
+        var action = () => testResponse.ShouldHaveStatusCode(500);
+
+        action.Should().Throw<TestStringResponseAssertionException>()
+            .WithMessage("""
+            *Status code: 200 (OK)
+            Response: 
+            *not read*
+            """);
+    }
+    
+    
+    [Fact]
     public async Task AsTestStringResponse_ShouldReturnReadTestResponse()
     {
         var text = "Lorem ipsum dolor sit amet";
@@ -92,6 +114,7 @@ public class TestStringResponseTests
         testResponse.IsRead.Should().BeTrue();
         testResponse.AsString.Should().Be(text);
     }
+    
     
     [Fact]
     public async Task ShouldSucceed_SuccessStatusCode_ShouldReturnResponseString()
