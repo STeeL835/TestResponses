@@ -2,7 +2,7 @@
 
 namespace TestClientResponse.String;
 
-public record TestStringResponse(HttpResponseMessage Response) : TestResponse(Response) //TODO: rename to HttpResponse
+public record TestStringResponse(HttpResponseMessage HttpResponse) : TestResponse(HttpResponse)
 {
     private string? _asString;
     
@@ -17,7 +17,7 @@ public record TestStringResponse(HttpResponseMessage Response) : TestResponse(Re
 
     protected async Task ReadString()
     {
-        _asString = await Response.Content.ReadAsStringAsync();
+        _asString = await HttpResponse.Content.ReadAsStringAsync();
         // TODO: cancellationTokens?
     }
 

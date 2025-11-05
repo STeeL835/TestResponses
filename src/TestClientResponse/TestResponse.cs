@@ -3,7 +3,7 @@ using System.Net;
 
 namespace TestClientResponse;
 
-public abstract record TestResponse(HttpResponseMessage Response)
+public abstract record TestResponse(HttpResponseMessage HttpResponse)
 {
     #region Read
 
@@ -21,7 +21,7 @@ public abstract record TestResponse(HttpResponseMessage Response)
 
     #region StatusCode
 
-    public HttpStatusCode StatusCode => Response.StatusCode;
+    public HttpStatusCode StatusCode => HttpResponse.StatusCode;
 
     public void ShouldHaveStatusCode(HttpStatusCode expectedStatusCode) => ShouldHaveStatusCode((int)expectedStatusCode);
 

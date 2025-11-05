@@ -23,7 +23,7 @@ public abstract class TestResponseAssertionException<TResponse> : TestResponseEx
     {
         var result = $"""
             {message}
-            Status code: {(int)Response.StatusCode} ({Response.Response.ReasonPhrase})
+            Status code: {(int)Response.StatusCode} ({Response.HttpResponse.ReasonPhrase})
             """;
         
         return result;
