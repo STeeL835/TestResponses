@@ -37,18 +37,17 @@ public class ShouldHaveStatusCodeTests
             .WithMessage("Response status code is not in range 400..499*");
     }
 
-    public static TheoryData<Range> Range_IncorrectValues_ShouldThrow_TestCases => new TheoryData<Range>
-    {
-        200..,
-        ..299,
-        ^200..299,
-        200..^299,
-        200..600,
-        99..500,
-        299..200,
-    };
-
-    [Theory, MemberData(nameof(Range_IncorrectValues_ShouldThrow_TestCases))]
+    public static TheoryData<Range> IncorrectRangeTestCases =>
+    [
+        (200..),
+        (..299),
+        (^200..299),
+        (200..^299),
+        (200..600),
+        (99..500),
+        (299..200)
+    ];
+    [Theory, MemberData(nameof(IncorrectRangeTestCases))]
     public async Task Range_IncorrectValues_ShouldThrow(Range statusCodeRange)
     {
         var testResponse = await GetResponseWithCode(HttpStatusCode.OK).AsTestStringResponse();

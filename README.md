@@ -25,5 +25,8 @@
   - but there is a method that helps to assert _needed_ status code
     - and exception returns useful info like statusCode and actual response
     
-- testResponse tries to read responses, but does not fail until try to access the result? Or should we provide a way to check if everything okay without checking? 
-  - maybe ShouldSucceed should check the status AND that everything is deserialized? But how
+- testResponse does not check the success of intermediate client calls
+  - but there is ShouldSucceed extension that helps to ensure test does not continue after failed request 
+
+- testResponse offers classes only for base return scenarios (string, dto, stream, file)
+  - but allows to create your own testResponse class for your case

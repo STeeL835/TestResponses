@@ -58,5 +58,4 @@ public abstract record TestResponse(HttpResponseMessage Response)
     
     [DoesNotReturn]
     protected abstract void ThrowAssertionException(string message);
-    // TODO, TEST: do not read again if already read
 }
