@@ -1,20 +1,4 @@
 ﻿namespace TestClientResponse;
 
-public abstract class TestResponseAssertionException<TResponse>(TResponse response, string message, Exception? inner = null)
-    : TestResponseException(message, inner)
-    where TResponse : TestResponse
-{
-    protected readonly TResponse Response = response;
-
-    public override string Message => $"{BuildAssertMessage(base.Message)}";
-
-    protected virtual string BuildAssertMessage(string message)
-    {
-        var result = $"""
-            {message}
-            Status code: {(int)Response.StatusCode} ({Response.HttpResponse.ReasonPhrase})
-            """;
-        
-        return result;
-    }
-}
+/// <summary> A non-generic abstract class for convenience of catching </summary>
+public abstract class TestResponseAssertionException(string message, Exception? inner = null) : TestResponseException(message, inner);
