@@ -1,39 +1,39 @@
 ﻿using System.Net;
 using System.Net.Mime;
 using RichardSzalay.MockHttp;
-using TestClientResponse.String;
 using TestClientResponse.Tests.Utilities;
+using TestClientResponse.Text;
 
 namespace TestClientResponse.Tests;
 
-public class TestStringResponseTests
+public class TestTextResponseTests
 {
-    #region AsString
+    #region AsText
 
     [Fact]
-    public async Task AsString_ResponseIsRead_ShouldReadStringResponse()
+    public async Task AsText_ResponseIsRead_ShouldReadResponseText()
     {
         var text = "Lorem ipsum dolor sit amet";
 
         var httpResponse = await Receive(text);
         
-        var testResponse = new TestStringResponse(httpResponse);
+        var testResponse = new TestTextResponse(httpResponse);
         await testResponse.Read();
 
         testResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         testResponse.IsRead.Should().BeTrue();
-        testResponse.AsString.Should().Be(text);
+        testResponse.AsText.Should().Be(text);
     }
     
     [Fact]
-    public async Task AsString_ResponseNotRead_ShouldThrowException()
+    public async Task AsText_ResponseNotRead_ShouldThrowException()
     {
         var text = "Lorem ipsum dolor sit amet";
         
         var httpResponse = await Receive(text);
         
-        var testResponse = new TestStringResponse(httpResponse);
-        var action = () => testResponse.AsString;
+        var testResponse = new TestTextResponse(httpResponse);
+        var action = () => testResponse.AsText;
 
         testResponse.IsRead.Should().BeFalse();
         action.Should().Throw<TestResponseException>();
@@ -42,18 +42,18 @@ public class TestStringResponseTests
     [Theory]
     [InlineData(HttpStatusCode.BadRequest)]
     [InlineData(HttpStatusCode.InternalServerError)]
-    public async Task AsString_BadStatusCode_ShouldStillReadResponse(HttpStatusCode statusCode)
+    public async Task AsText_BadStatusCode_ShouldStillReadResponse(HttpStatusCode statusCode)
     {
         var text = "Lorem ipsum dolor sit amet";
 
         var httpResponse = await Receive(text, statusCode);
         
-        var testResponse = new TestStringResponse(httpResponse);
+        var testResponse = new TestTextResponse(httpResponse);
         await testResponse.Read();
         
         testResponse.IsRead.Should().BeTrue();
         testResponse.StatusCode.Should().Be(statusCode);
-        testResponse.AsString.Should().Be(text);
+        testResponse.AsText.Should().Be(text);
     }
 
     #endregion
@@ -67,12 +67,12 @@ public class TestStringResponseTests
         
         var httpResponse = await Receive(text);
         
-        var testResponse = new TestStringResponse(httpResponse);
+        var testResponse = new TestTextResponse(httpResponse);
         await testResponse.Read();
         
         var action = () => testResponse.ShouldHaveStatusCode(500);
 
-        action.Should().Throw<TestStringResponseAssertionException>()
+        action.Should().Throw<TestTextResponseAssertionException>()
             .WithMessage("""
                 *Status code: 200 (OK)
                 Response: 
@@ -87,11 +87,11 @@ public class TestStringResponseTests
         
         var httpResponse = await Receive(text);
         
-        var testResponse = new TestStringResponse(httpResponse);
+        var testResponse = new TestTextResponse(httpResponse);
         
         var action = () => testResponse.ShouldHaveStatusCode(500);
 
-        action.Should().Throw<TestStringResponseAssertionException>()
+        action.Should().Throw<TestTextResponseAssertionException>()
             .WithMessage("""
                 *Status code: 200 (OK)
                 Response: 
@@ -102,11 +102,11 @@ public class TestStringResponseTests
     #endregion
     
     [Fact]
-    public async Task ShouldSucceed_SuccessStatusCode_ShouldReturnResponseString()
+    public async Task ShouldSucceed_SuccessStatusCode_ShouldReturnResponseText()
     {
         var text = "Lorem ipsum dolor sit amet";
         
-        var clientGetResponse = () => Receive(text).ReadAs<TestStringResponse>();
+        var clientGetResponse = () => Receive(text).ReadAs<TestTextResponse>();
 
         var response = await clientGetResponse().ShouldSucceed();
 
@@ -114,15 +114,15 @@ public class TestStringResponseTests
     }
     
     [Fact]
-    public async Task ShouldSucceed_FailStatusCode_ShouldReturnResponseString()
+    public async Task ShouldSucceed_FailStatusCode_ShouldReturnResponseText()
     {
         var text = "Lorem ipsum dolor sit amet";
         
-        var clientGetResponse = () => Receive(text, HttpStatusCode.BadRequest).ReadAs<TestStringResponse>();
+        var clientGetResponse = () => Receive(text, HttpStatusCode.BadRequest).ReadAs<TestTextResponse>();
 
         var action = () => clientGetResponse().ShouldSucceed();
 
-        await action.Should().ThrowAsync<TestStringResponseAssertionException>();
+        await action.Should().ThrowAsync<TestTextResponseAssertionException>();
     }
     
     

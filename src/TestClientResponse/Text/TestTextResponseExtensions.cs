@@ -1,6 +1,6 @@
-﻿namespace TestClientResponse.String;
+﻿namespace TestClientResponse.Text;
 
-public static class TestStringResponseExtensions
+public static class TestTextResponseExtensions
 {
     // TODO: maybe a Result T abstract property for universality.
     // But if there are more than one result type? (SuccessDto+ErrorDto, FileStream+FileName)
@@ -9,14 +9,14 @@ public static class TestStringResponseExtensions
     // - an interface! we can have children implement smth like ICanSucceed<TResult>
     //   - but now dto class is ICanSucceed x2.. method either will require a type parameter or a custom extension anyway
     //     - can do an experiment later
-    public static async Task<string?> ShouldSucceed(this Task<TestStringResponse> responseTask)
+    public static async Task<string?> ShouldSucceed(this Task<TestTextResponse> responseTask)
     {
         var testResponse = await responseTask;
         await testResponse.Read();
         
         testResponse.ShouldHaveStatusCode(200..299);
 
-        return testResponse.AsString;
+        return testResponse.AsText;
     }
     // TODO: Maybe TestResponse can hold expected status code so client can set it and ShouldSucceed can use it
     // TODO: ShouldSucceed(withStatus) x3

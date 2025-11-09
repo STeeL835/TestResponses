@@ -2,6 +2,7 @@
 using System.Net.Mime;
 using RichardSzalay.MockHttp;
 using TestClientResponse.Json;
+using TestClientResponse.Tests.Dto;
 using TestClientResponse.Tests.Utilities;
 
 namespace TestClientResponse.Tests;
@@ -36,7 +37,7 @@ public class TestJsonResponseTests
 
         testResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         testResponse.IsRead.Should().BeTrue();
-        testResponse.AsString.Should().Be(json);
+        testResponse.AsText.Should().Be(json);
         testResponse.AsDto.Should().BeEquivalentTo(weather);
     }
 
@@ -55,7 +56,7 @@ public class TestJsonResponseTests
 
         testResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         testResponse.IsRead.Should().BeTrue();
-        testResponse.AsString.Should().Be(json);
+        testResponse.AsText.Should().Be(json);
         testResponse.AsDto.Should().BeEquivalentTo(text);
     }
 
@@ -71,7 +72,7 @@ public class TestJsonResponseTests
 
         testResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         testResponse.IsRead.Should().BeTrue();
-        testResponse.AsString.Should().Be(json);
+        testResponse.AsText.Should().Be(json);
         testResponse.AsDto.Should().BeNull();
     }
     
@@ -91,7 +92,7 @@ public class TestJsonResponseTests
 
         testResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         testResponse.IsRead.Should().BeTrue();
-        testResponse.AsString.Should().Be(json);
+        testResponse.AsText.Should().Be(json);
         testResponse.AsDto.Should().BeEquivalentTo(weather);
     }
 
@@ -141,7 +142,7 @@ public class TestJsonResponseTests
 
         testResponse.IsRead.Should().BeTrue();
         testResponse.StatusCode.Should().Be(statusCode);
-        testResponse.AsString.Should().Be(json);
+        testResponse.AsText.Should().Be(json);
         testResponse.AsDto.Should().Be(weather);
     }
 
@@ -245,5 +246,4 @@ public class TestJsonResponseTests
             r.Respond(statusCode, MediaTypeNames.Application.Json, content));
     }
     
-    public record Weather(string City, DateOnly Date, int TemperatureC); // TODO: move out
 }

@@ -1,14 +1,14 @@
 ﻿using System.Net;
 using System.Net.Mime;
 using RichardSzalay.MockHttp;
-using TestClientResponse.String;
 using TestClientResponse.Tests.Utilities;
+using TestClientResponse.Text;
 
 namespace TestClientResponse.Tests;
 
 public class ShouldHaveStatusCodeTests
 {
-    // TestStringResponse is used for tests, but this method is available in all TestResponse inheritors 
+    // TestTextResponse is used for tests, but this method is available in all TestResponse inheritors 
     
     [Theory]
     [InlineData(HttpStatusCode.OK)]
@@ -33,7 +33,7 @@ public class ShouldHaveStatusCodeTests
         
         var action = () => testResponse.ShouldHaveStatusCode(400..499);
         
-        action.Should().Throw<TestStringResponseAssertionException>()
+        action.Should().Throw<TestTextResponseAssertionException>()
             .WithMessage("Response status code is not in range 400..499*");
     }
 
@@ -77,7 +77,7 @@ public class ShouldHaveStatusCodeTests
         
         var action = () => testResponse.ShouldHaveStatusCode(HttpStatusCode.MethodNotAllowed); // 405
         
-        action.Should().Throw<TestStringResponseAssertionException>()
+        action.Should().Throw<TestTextResponseAssertionException>()
             .WithMessage("Response status code is not 405*");
     }
 
@@ -101,7 +101,7 @@ public class ShouldHaveStatusCodeTests
         
         var action = () => testResponse.ShouldHaveStatusCode(429);
         
-        action.Should().Throw<TestStringResponseAssertionException>()
+        action.Should().Throw<TestTextResponseAssertionException>()
             .WithMessage("Response status code is not 429*");
     }
 
@@ -120,12 +120,12 @@ public class ShouldHaveStatusCodeTests
 
     
     
-    private async Task<TestStringResponse> GetReadTestResponseWithCode(HttpStatusCode statusCode)
+    private async Task<TestTextResponse> GetReadTestResponseWithCode(HttpStatusCode statusCode)
     {
         var httpResponse = await TestHttpClient.ReceiveResponse(r =>
             r.Respond(statusCode, MediaTypeNames.Text.Plain, string.Empty));
         
-        var testResponse = new TestStringResponse(httpResponse);
+        var testResponse = new TestTextResponse(httpResponse);
         
         await testResponse.Read();
 

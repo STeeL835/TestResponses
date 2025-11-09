@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
-using TestClientResponse.String;
+using TestClientResponse.Text;
 
 namespace TestClientResponse.Json;
 
-public record TestJsonResponse<TDto>(HttpResponseMessage HttpResponse) : TestStringResponse(HttpResponse)
+public record TestJsonResponse<TDto>(HttpResponseMessage HttpResponse) : TestTextResponse(HttpResponse)
 {
     private ValueReadResult<TDto>? _dtoReadResult;
 
@@ -13,8 +13,8 @@ public record TestJsonResponse<TDto>(HttpResponseMessage HttpResponse) : TestStr
 
     protected override async Task ReadResponse()
     {
-        var stringResponse = await ReadString();
-        _dtoReadResult = DeserializeDtoWithDelayedException(stringResponse);
+        var responseText = await ReadText();
+        _dtoReadResult = DeserializeDtoWithDelayedException(responseText);
     }
 
     private static ValueReadResult<TDto> DeserializeDtoWithDelayedException(string stringResponse)
