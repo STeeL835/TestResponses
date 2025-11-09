@@ -1,39 +1,44 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
+using TestClientResponse.String;
 
-namespace TestClientResponse.String;
+namespace TestClientResponse.Json;
 
 public record TestJsonResponse<TDto>(HttpResponseMessage HttpResponse) : TestStringResponse(HttpResponse)
 {
-    private TDto? _asDto;
-    
-    public TDto? AsDto => GetReadValue(_asDto);
+    private DelayedValueWithException<TDto>? _delayedDto;
+
+    public bool IsDtoReadSuccessfully => _delayedDto?.IsReadSuccessfully ?? IsRead;
+    public TDto? AsDto => GetReadValue(_delayedDto!);
 
     public override async Task Read()
     {
         if (IsRead) return; // TODO: Test it's not read
         var stringResponse = await ReadString();
-        ReadDto(stringResponse);
+        _delayedDto = DeserializeDtoWithDelayedException(stringResponse);
         IsRead = true; 
     }
 
-    protected TDto ReadDto(string stringResponse)
+    private static DelayedValueWithException<TDto> DeserializeDtoWithDelayedException(string stringResponse)
     {
-        return _asDto = JsonSerializer.Deserialize<TDto>(stringResponse); // TODO: test is read
-        
-        // TODO: test is deserialized
-        // TODO: test does not throw on read
-        // TODO: test does throw on property access
-        // TODO: test does throw on ShouldSucceed
-        // TODO: test exception shows json
-        // TODO: test exception shows string if json is incorrect
-        //TODO: what if can't deserialize
-        //TODO: exception can show string even though reading wasn't done completely
+        try
+        {
+            var dto = JsonSerializer.Deserialize<TDto>(stringResponse, new JsonSerializerOptions(JsonSerializerDefaults.Web)
+            {
+                AllowTrailingCommas = true,
+                ReadCommentHandling = JsonCommentHandling.Skip,
+            });
+            return new DelayedValueWithException<TDto>(dto, null);
+        }
+        catch (JsonException ex)
+        {
+            return new DelayedValueWithException<TDto>(default, ex);
+        }
     }
-    
+
     [DoesNotReturn]
-    protected override void ThrowAssertionException(string message)
+    protected override void ThrowAssertionException(string message, Exception? innerException = null)
     {
-        // TODO: Json exception
+        throw new TestJsonResponseAssertionException(this, message, innerException);
     }
 }
