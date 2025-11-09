@@ -1,19 +1,10 @@
 ﻿namespace TestClientResponse;
 
-public abstract class TestResponseAssertionException<TResponse> : TestResponseException
+public abstract class TestResponseAssertionException<TResponse>(TResponse response, string message, Exception? inner = null)
+    : TestResponseException(message, inner)
     where TResponse : TestResponse
 {
-    protected readonly TResponse Response;
-
-    public TestResponseAssertionException(TResponse response, string message) : base(message)
-    {
-        Response = response;
-    }
-
-    public TestResponseAssertionException(TResponse response, string message, Exception inner) : base(message, inner)
-    {
-        Response = response;
-    }
+    protected readonly TResponse Response = response;
 
     public override string Message => $"{BuildAssertMessage(base.Message)}";
 

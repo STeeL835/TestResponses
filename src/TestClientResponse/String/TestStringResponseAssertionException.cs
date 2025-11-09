@@ -1,19 +1,18 @@
 ﻿namespace TestClientResponse.String;
 
-public class TestStringResponseAssertionException : TestResponseAssertionException<TestStringResponse>
+public class TestStringResponseAssertionException(TestStringResponse response, string message, Exception? inner = null)
+    : TestResponseAssertionException<TestStringResponse>(response, message, inner)
 {
-    public TestStringResponseAssertionException(TestStringResponse response, string message) : base(response, message) { }
-
-    public TestStringResponseAssertionException(TestStringResponse response, string message, Exception inner) : base(response, message, inner) { }
+    private string? _assertMessage;
 
     protected override string BuildAssertMessage(string message)
     {
-        var result = $"""
+        _assertMessage ??= $"""
             {base.BuildAssertMessage(message)}
             Response: 
             {(Response.IsRead ? Response.AsString : "*not read*")}
             """;
 
-        return result;
+        return _assertMessage;
     }
 }
