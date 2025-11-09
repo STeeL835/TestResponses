@@ -8,13 +8,14 @@ namespace TestClientResponse.Tests;
 
 public class TestStringResponseTests
 {
+    #region AsString
+
     [Fact]
     public async Task AsString_ResponseIsRead_ShouldReadStringResponse()
     {
         var text = "Lorem ipsum dolor sit amet";
-        
-        var httpResponse = await TestHttpClient.ReceiveResponse(r => 
-            r.Respond(MediaTypeNames.Text.Plain, text));
+
+        var httpResponse = await Receive(text);
         
         var testResponse = new TestStringResponse(httpResponse);
         await testResponse.Read();
@@ -29,8 +30,7 @@ public class TestStringResponseTests
     {
         var text = "Lorem ipsum dolor sit amet";
         
-        var httpResponse = await TestHttpClient.ReceiveResponse(r => 
-            r.Respond(MediaTypeNames.Text.Plain, text));
+        var httpResponse = await Receive(text);
         
         var testResponse = new TestStringResponse(httpResponse);
         var action = () => testResponse.AsString;
@@ -46,8 +46,7 @@ public class TestStringResponseTests
     {
         var text = "Lorem ipsum dolor sit amet";
 
-        var httpResponse = await TestHttpClient.ReceiveResponse(r =>
-            r.Respond(statusCode, MediaTypeNames.Text.Plain, text));
+        var httpResponse = await Receive(text, statusCode);
         
         var testResponse = new TestStringResponse(httpResponse);
         await testResponse.Read();
@@ -56,15 +55,17 @@ public class TestStringResponseTests
         testResponse.StatusCode.Should().Be(statusCode);
         testResponse.AsString.Should().Be(text);
     }
-    
-    
+
+    #endregion
+
+    #region Assertion exception
+
     [Fact]
     public async Task AssertionException_ResponseIsRead_ShouldHaveStatusAndResponse()
     {
         var text = "Lorem ipsum dolor sit amet";
         
-        var httpResponse = await TestHttpClient.ReceiveResponse(r =>
-            r.Respond(MediaTypeNames.Text.Plain, text));
+        var httpResponse = await Receive(text);
         
         var testResponse = new TestStringResponse(httpResponse);
         await testResponse.Read();
@@ -73,10 +74,10 @@ public class TestStringResponseTests
 
         action.Should().Throw<TestStringResponseAssertionException>()
             .WithMessage("""
-            *Status code: 200 (OK)
-            Response: 
-            Lorem ipsum dolor sit amet
-            """);
+                *Status code: 200 (OK)
+                Response: 
+                Lorem ipsum dolor sit amet
+                """);
     }
     
     [Fact]
@@ -84,8 +85,7 @@ public class TestStringResponseTests
     {
         var text = "Lorem ipsum dolor sit amet";
         
-        var httpResponse = await TestHttpClient.ReceiveResponse(r =>
-            r.Respond(MediaTypeNames.Text.Plain, text));
+        var httpResponse = await Receive(text);
         
         var testResponse = new TestStringResponse(httpResponse);
         
@@ -93,20 +93,20 @@ public class TestStringResponseTests
 
         action.Should().Throw<TestStringResponseAssertionException>()
             .WithMessage("""
-            *Status code: 200 (OK)
-            Response: 
-            *not read*
-            """);
+                *Status code: 200 (OK)
+                Response: 
+                *not read*
+                """);
     }
-    
+
+    #endregion
     
     [Fact]
     public async Task AsTestStringResponse_ShouldReturnReadTestResponse()
     {
         var text = "Lorem ipsum dolor sit amet";
         
-        var getResponse = () => TestHttpClient.ReceiveResponse(r => 
-            r.Respond(MediaTypeNames.Text.Plain, text));
+        var getResponse = () => Receive(text);
 
         var testResponse = await getResponse().AsTestStringResponse();
 
@@ -121,8 +121,7 @@ public class TestStringResponseTests
     {
         var text = "Lorem ipsum dolor sit amet";
         
-        var clientGetResponse = () => TestHttpClient.ReceiveResponse(r => 
-            r.Respond(MediaTypeNames.Text.Plain, text)).AsTestStringResponse();
+        var clientGetResponse = () => Receive(text).AsTestStringResponse();
 
         var response = await clientGetResponse().ShouldSucceed();
 
@@ -134,11 +133,18 @@ public class TestStringResponseTests
     {
         var text = "Lorem ipsum dolor sit amet";
         
-        var clientGetResponse = () => TestHttpClient.ReceiveResponse(r => 
-            r.Respond(HttpStatusCode.BadRequest, MediaTypeNames.Text.Plain, text)).AsTestStringResponse();
+        var clientGetResponse = () => Receive(text, HttpStatusCode.BadRequest).AsTestStringResponse();
 
         var action = () => clientGetResponse().ShouldSucceed();
 
         await action.Should().ThrowAsync<TestStringResponseAssertionException>();
+    }
+    
+    
+    
+    private Task<HttpResponseMessage> Receive(string content, HttpStatusCode statusCode = HttpStatusCode.OK)
+    {
+        return TestHttpClient.ReceiveResponse(r =>
+            r.Respond(statusCode, MediaTypeNames.Text.Plain, content));
     }
 }
