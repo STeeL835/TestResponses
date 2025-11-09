@@ -17,7 +17,7 @@ public abstract record TestResponse(HttpResponseMessage HttpResponse)
         return value;
     }
     
-    protected T? GetReadValue<T>(DelayedValueWithException<T> value) 
+    protected T? GetReadValue<T>(ValueReadResult<T> value) 
     {
         if (!IsRead) 
             throw new TestResponseException($"Response is not read. Call {nameof(Read)}() before accessing response content");

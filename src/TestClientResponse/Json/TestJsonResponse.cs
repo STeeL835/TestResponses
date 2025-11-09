@@ -6,33 +6,34 @@ namespace TestClientResponse.Json;
 
 public record TestJsonResponse<TDto>(HttpResponseMessage HttpResponse) : TestStringResponse(HttpResponse)
 {
-    private DelayedValueWithException<TDto>? _delayedDto;
+    private ValueReadResult<TDto>? _dtoReadResult;
 
-    public bool IsDtoReadSuccessfully => _delayedDto?.IsReadSuccessfully ?? IsRead;
-    public TDto? AsDto => GetReadValue(_delayedDto!);
+    public bool IsDtoReadSuccessfully => _dtoReadResult?.IsReadSuccessfully ?? IsRead;
+    public TDto? AsDto => GetReadValue(_dtoReadResult!);
 
     public override async Task Read()
     {
-        if (IsRead) return; // TODO: Test it's not read
+        if (IsRead) return; // TODO: Test it's not read again
         var stringResponse = await ReadString();
-        _delayedDto = DeserializeDtoWithDelayedException(stringResponse);
+        _dtoReadResult = DeserializeDtoWithDelayedException(stringResponse);
         IsRead = true; 
     }
 
-    private static DelayedValueWithException<TDto> DeserializeDtoWithDelayedException(string stringResponse)
+    private static ValueReadResult<TDto> DeserializeDtoWithDelayedException(string stringResponse)
     {
         try
         {
+            // TODO: option to use different (-ly configured) serializer  
             var dto = JsonSerializer.Deserialize<TDto>(stringResponse, new JsonSerializerOptions(JsonSerializerDefaults.Web)
             {
                 AllowTrailingCommas = true,
                 ReadCommentHandling = JsonCommentHandling.Skip,
             });
-            return new DelayedValueWithException<TDto>(dto, null);
+            return new ValueReadResult<TDto>(dto, null);
         }
         catch (JsonException ex)
         {
-            return new DelayedValueWithException<TDto>(default, ex);
+            return new ValueReadResult<TDto>(default, ex);
         }
     }
 
