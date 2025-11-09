@@ -21,12 +21,7 @@ public record TestJsonResponse<TDto>(HttpResponseMessage HttpResponse) : TestTex
     {
         try
         {
-            // TODO: option to use different (-ly configured) serializer  
-            var dto = JsonSerializer.Deserialize<TDto>(stringResponse, new JsonSerializerOptions(JsonSerializerDefaults.Web)
-            {
-                AllowTrailingCommas = true,
-                ReadCommentHandling = JsonCommentHandling.Skip,
-            });
+            var dto = JsonSerializer.Deserialize<TDto>(stringResponse, TestJsonResponseOptions.SerializerOptions);
             return new ValueReadResult<TDto>(dto, null);
         }
         catch (JsonException ex)

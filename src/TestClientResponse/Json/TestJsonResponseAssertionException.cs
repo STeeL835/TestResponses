@@ -5,11 +5,10 @@ using TestClientResponse.Text;
 
 namespace TestClientResponse.Json;
 
-public class TestJsonResponseAssertionException : TestResponseAssertionException<TestTextResponse>
+public class TestJsonResponseAssertionException(TestTextResponse response, string message, Exception? inner = null)
+    : TestResponseAssertionException<TestTextResponse>(response, message, inner)
 {
     private string? _assertMessage;
-
-    public TestJsonResponseAssertionException(TestTextResponse response, string message, Exception? inner = null) : base(response, message, inner) { }
 
     protected override string BuildAssertMessage(string message)
     {
@@ -28,17 +27,13 @@ public class TestJsonResponseAssertionException : TestResponseAssertionException
         {
             var jObj = JsonNode.Parse(json, documentOptions: new JsonDocumentOptions()
             {
-                AllowTrailingCommas = true,
-                CommentHandling = JsonCommentHandling.Skip,
+                AllowTrailingCommas = TestJsonResponseOptions.SerializerOptions.AllowTrailingCommas,
+                CommentHandling = TestJsonResponseOptions.SerializerOptions.ReadCommentHandling,
             });
 
             if (jObj is null) return json;
 
-            var indentedJson = jObj.ToJsonString(new JsonSerializerOptions()
-            {
-                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, // non-latin characters without encoding
-                WriteIndented = true,
-            });
+            var indentedJson = jObj.ToJsonString(TestJsonResponseOptions.SerializerOptions);
             return indentedJson;
         }
         catch (JsonException)
