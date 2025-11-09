@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Runtime.ExceptionServices;
 
 namespace TestClientResponse.String;
 
@@ -7,7 +6,7 @@ public record TestStringResponse(HttpResponseMessage HttpResponse) : TestRespons
 {
     private string? _asString;
     
-    public string? AsString => GetReadValue(_asString);
+    public string AsString => GetReadValue(_asString)!;
     
     public override async Task Read() // TODO: maybe find a way to universalize this
     {
@@ -19,14 +18,13 @@ public record TestStringResponse(HttpResponseMessage HttpResponse) : TestRespons
     protected async Task<string> ReadString()
     {
         return _asString = await HttpResponse.Content.ReadAsStringAsync(); 
-        // TODO: do not set _asString here
         // TODO: cancellationTokens?
     }
 
     [DoesNotReturn]
-    protected override void ThrowAssertionException(string message)
+    protected override void ThrowAssertionException(string message, Exception? innerException = null)
     {
-        throw new TestStringResponseAssertionException(this, message);
+        throw new TestStringResponseAssertionException(this, message, innerException);
     }
 
     // TODO, TEST: Check the response type header?

@@ -13,8 +13,19 @@ public abstract record TestResponse(HttpResponseMessage HttpResponse)
 
     protected T GetReadValue<T>(T value) 
     {
-        if (IsRead) return value;
-        throw new TestResponseException($"Response is not read. Call {nameof(Read)}() before accessing response content");
+        if (!IsRead) throw new TestResponseException($"Response is not read. Call {nameof(Read)}() before accessing response content");
+        return value;
+    }
+    
+    protected T? GetReadValue<T>(DelayedValueWithException<T> value) 
+    {
+        if (!IsRead) 
+            throw new TestResponseException($"Response is not read. Call {nameof(Read)}() before accessing response content");
+        
+        if (!value.IsReadSuccessfully) 
+            ThrowAssertionException("Response could not be deserialized (see inner exception)", value.ExceptionHappenedDuringRead);
+        
+        return value.Value;
     }
 
     #endregion
@@ -56,6 +67,7 @@ public abstract record TestResponse(HttpResponseMessage HttpResponse)
 
     #endregion
     
+    // TODO: assertion - status code and value is read
     [DoesNotReturn]
-    protected abstract void ThrowAssertionException(string message);
+    protected abstract void ThrowAssertionException(string message, Exception? innerException = null);
 }
