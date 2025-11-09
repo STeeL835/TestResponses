@@ -9,7 +9,14 @@ public abstract record TestResponse(HttpResponseMessage HttpResponse)
 
     public bool IsRead { get; protected set; }
 
-    public abstract Task Read();
+    public async Task Read()
+    {
+        if (IsRead) return; // TODO: Test it's not read
+        await ReadResponse();
+        IsRead = true; 
+    }
+    
+    protected abstract Task ReadResponse();
 
     protected T GetReadValue<T>(T value) 
     {
@@ -67,7 +74,6 @@ public abstract record TestResponse(HttpResponseMessage HttpResponse)
 
     #endregion
     
-    // TODO: assertion - status code and value is read
     [DoesNotReturn]
     protected abstract void ThrowAssertionException(string message, Exception? innerException = null);
 }

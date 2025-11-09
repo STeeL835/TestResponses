@@ -7,12 +7,10 @@ public record TestStringResponse(HttpResponseMessage HttpResponse) : TestRespons
     private string? _asString;
     
     public string AsString => GetReadValue(_asString)!;
-    
-    public override async Task Read() // TODO: maybe find a way to universalize this
+
+    protected override async Task ReadResponse()
     {
-        if (IsRead) return; // TODO: Test it's not read
         await ReadString();
-        IsRead = true; 
     }
 
     protected async Task<string> ReadString()

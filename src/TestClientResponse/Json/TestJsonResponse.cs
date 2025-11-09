@@ -11,12 +11,10 @@ public record TestJsonResponse<TDto>(HttpResponseMessage HttpResponse) : TestStr
     public bool IsDtoReadSuccessfully => _dtoReadResult?.IsReadSuccessfully ?? IsRead;
     public TDto? AsDto => GetReadValue(_dtoReadResult!);
 
-    public override async Task Read()
+    protected override async Task ReadResponse()
     {
-        if (IsRead) return; // TODO: Test it's not read again
         var stringResponse = await ReadString();
         _dtoReadResult = DeserializeDtoWithDelayedException(stringResponse);
-        IsRead = true; 
     }
 
     private static ValueReadResult<TDto> DeserializeDtoWithDelayedException(string stringResponse)
