@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.ExceptionServices;
 
 namespace TestClientResponse.String;
 
@@ -15,9 +16,10 @@ public record TestStringResponse(HttpResponseMessage HttpResponse) : TestRespons
         IsRead = true; 
     }
 
-    protected async Task ReadString()
+    protected async Task<string> ReadString()
     {
-        _asString = await HttpResponse.Content.ReadAsStringAsync();
+        return _asString = await HttpResponse.Content.ReadAsStringAsync(); 
+        // TODO: do not set _asString here
         // TODO: cancellationTokens?
     }
 
