@@ -2,14 +2,6 @@
 
 public static class TestStringResponseExtensions
 {
-    // TODO: maybe a .ReadAs<TTestResponse>() with activation? for universality
-    public static async Task<TestStringResponse> AsTestStringResponse(this Task<HttpResponseMessage> responseTask)
-    {
-        var testResponse = new TestStringResponse(await responseTask);
-        await testResponse.Read();
-        return testResponse;
-    }
-
     // TODO: maybe a Result T abstract property for universality.
     // But if there are more than one result type? (SuccessDto+ErrorDto, FileStream+FileName)
     // - fail cases are to check anyway, but for files.. file class?..

@@ -17,7 +17,7 @@ public class ShouldHaveStatusCodeTests
     [InlineData((HttpStatusCode)299)]
     public async Task Range_StatusCodeMatches_ShouldNotThrow(HttpStatusCode statusCode)
     {
-        var testResponse = await GetResponseWithCode(statusCode).AsTestStringResponse();
+        var testResponse = await GetReadTestResponseWithCode(statusCode);
         
         var action = () => testResponse.ShouldHaveStatusCode(200..299);
 
@@ -29,7 +29,7 @@ public class ShouldHaveStatusCodeTests
     [InlineData(HttpStatusCode.InternalServerError)]
     public async Task Range_StatusCodeDoesNotMatch_ShouldThrow(HttpStatusCode statusCode)
     {
-        var testResponse = await GetResponseWithCode(statusCode).AsTestStringResponse();
+        var testResponse = await GetReadTestResponseWithCode(statusCode);
         
         var action = () => testResponse.ShouldHaveStatusCode(400..499);
         
@@ -50,7 +50,7 @@ public class ShouldHaveStatusCodeTests
     [Theory, MemberData(nameof(IncorrectRangeTestCases))]
     public async Task Range_IncorrectValues_ShouldThrow(Range statusCodeRange)
     {
-        var testResponse = await GetResponseWithCode(HttpStatusCode.OK).AsTestStringResponse();
+        var testResponse = await GetReadTestResponseWithCode(HttpStatusCode.OK);
         
         var action = () => testResponse.ShouldHaveStatusCode(statusCodeRange);
         
@@ -60,7 +60,7 @@ public class ShouldHaveStatusCodeTests
     [Fact]
     public async Task Enum_StatusCodeMatches_ShouldNotThrow()
     {
-        var testResponse = await GetResponseWithCode(HttpStatusCode.NotFound).AsTestStringResponse();
+        var testResponse = await GetReadTestResponseWithCode(HttpStatusCode.NotFound);
         
         var action = () => testResponse.ShouldHaveStatusCode(HttpStatusCode.NotFound);
 
@@ -73,7 +73,7 @@ public class ShouldHaveStatusCodeTests
     [InlineData(HttpStatusCode.BadRequest)] // 400
     public async Task Enum_StatusCodeDoesNotMatch_ShouldThrow(HttpStatusCode statusCode)
     {
-        var testResponse = await GetResponseWithCode(statusCode).AsTestStringResponse();
+        var testResponse = await GetReadTestResponseWithCode(statusCode);
         
         var action = () => testResponse.ShouldHaveStatusCode(HttpStatusCode.MethodNotAllowed); // 405
         
@@ -84,7 +84,7 @@ public class ShouldHaveStatusCodeTests
     [Fact]
     public async Task Int_StatusCodeMatches_ShouldNotThrow()
     {
-        var testResponse = await GetResponseWithCode(HttpStatusCode.Unauthorized).AsTestStringResponse();
+        var testResponse = await GetReadTestResponseWithCode(HttpStatusCode.Unauthorized);
         
         var action = () => testResponse.ShouldHaveStatusCode(401);
 
@@ -97,7 +97,7 @@ public class ShouldHaveStatusCodeTests
     [InlineData(HttpStatusCode.BadRequest)] // 400
     public async Task Int_StatusCodeDoesNotMatch_ShouldThrow(HttpStatusCode statusCode)
     {
-        var testResponse = await GetResponseWithCode(statusCode).AsTestStringResponse();
+        var testResponse = await GetReadTestResponseWithCode(statusCode);
         
         var action = () => testResponse.ShouldHaveStatusCode(429);
         
@@ -111,7 +111,7 @@ public class ShouldHaveStatusCodeTests
     [InlineData(600)]
     public async Task Int_StatusCodeIsInvalid_ShouldThrow(int expectedStatusCode)
     {
-        var testResponse = await GetResponseWithCode(HttpStatusCode.OK).AsTestStringResponse();
+        var testResponse = await GetReadTestResponseWithCode(HttpStatusCode.OK);
         
         var action = () => testResponse.ShouldHaveStatusCode(expectedStatusCode);
 
@@ -120,9 +120,15 @@ public class ShouldHaveStatusCodeTests
 
     
     
-    private Task<HttpResponseMessage> GetResponseWithCode(HttpStatusCode statusCode)
+    private async Task<TestStringResponse> GetReadTestResponseWithCode(HttpStatusCode statusCode)
     {
-        return TestHttpClient.ReceiveResponse(r =>
+        var httpResponse = await TestHttpClient.ReceiveResponse(r =>
             r.Respond(statusCode, MediaTypeNames.Text.Plain, string.Empty));
+        
+        var testResponse = new TestStringResponse(httpResponse);
+        
+        await testResponse.Read();
+
+        return testResponse;
     }
 }

@@ -102,26 +102,11 @@ public class TestStringResponseTests
     #endregion
     
     [Fact]
-    public async Task AsTestStringResponse_ShouldReturnReadTestResponse()
-    {
-        var text = "Lorem ipsum dolor sit amet";
-        
-        var getResponse = () => Receive(text);
-
-        var testResponse = await getResponse().AsTestStringResponse();
-
-        testResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        testResponse.IsRead.Should().BeTrue();
-        testResponse.AsString.Should().Be(text);
-    }
-    
-    
-    [Fact]
     public async Task ShouldSucceed_SuccessStatusCode_ShouldReturnResponseString()
     {
         var text = "Lorem ipsum dolor sit amet";
         
-        var clientGetResponse = () => Receive(text).AsTestStringResponse();
+        var clientGetResponse = () => Receive(text).ReadAs<TestStringResponse>();
 
         var response = await clientGetResponse().ShouldSucceed();
 
@@ -133,7 +118,7 @@ public class TestStringResponseTests
     {
         var text = "Lorem ipsum dolor sit amet";
         
-        var clientGetResponse = () => Receive(text, HttpStatusCode.BadRequest).AsTestStringResponse();
+        var clientGetResponse = () => Receive(text, HttpStatusCode.BadRequest).ReadAs<TestStringResponse>();
 
         var action = () => clientGetResponse().ShouldSucceed();
 
