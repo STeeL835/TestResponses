@@ -49,7 +49,7 @@ public abstract record TestResponse(HttpResponseMessage HttpResponse)
             throw new ArgumentException("Expected status code must be within range of HTTP status codes (100-599)", nameof(expectedStatusCode));
 
         if ((int)StatusCode != expectedStatusCode)
-            ThrowAssertionException($"Response status code is not {expectedStatusCode}"); // TODO: add default reason phrases maybe
+            ThrowAssertionException($"Response status code is not {expectedStatusCode}");
     }
 
     public void ShouldHaveStatusCode(Range expectedStatusCodes)

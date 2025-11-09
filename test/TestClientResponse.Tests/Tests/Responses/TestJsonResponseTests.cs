@@ -4,6 +4,7 @@ using RichardSzalay.MockHttp;
 using TestClientResponse.Json;
 using TestClientResponse.Tests.Dto;
 using TestClientResponse.Tests.Utilities;
+using TestClientResponse.Text;
 
 namespace TestClientResponse.Tests.Tests.Responses;
 
@@ -238,6 +239,48 @@ public class TestJsonResponseTests
 
     #endregion
 
+    #region ShouldSucceed
+
+    [Fact]
+    public async Task ShouldSucceed_SuccessStatusCode_ShouldReturnResponse()
+    {
+        var text = "Lorem ipsum dolor sit amet";
+        var json = $"\"{text}\"";
+        
+        var clientGetResponse = () => Receive(json).ReadAs<TestJsonResponse<string>>();
+
+        var response = await clientGetResponse().ShouldSucceed();
+
+        response.Should().Be(text);
+    }
+    
+    [Fact]
+    public async Task ShouldSucceed_FailStatusCode_ShouldThrow()
+    {
+        var text = "Lorem ipsum dolor sit amet";
+        var json = $"\"{text}\"";
+        
+        var testResponseTask = Receive(json, HttpStatusCode.BadRequest).ReadAs<TestJsonResponse<string>>();
+
+        var assertion = () => testResponseTask.ShouldSucceed();
+
+        await assertion.Should().ThrowAsync<TestResponseAssertionException>();
+    }
+    
+    [Fact]
+    public async Task ShouldSucceed_IncorrectModel_ShouldThrow()
+    {
+        var text = "Lorem ipsum dolor sit amet";
+        var json = $"\"{text}\"";
+        
+        var testResponseTask = Receive(json).ReadAs<TestJsonResponse<Weather>>();
+
+        var assertion = () => testResponseTask.ShouldSucceed();
+
+        await assertion.Should().ThrowAsync<TestResponseAssertionException>();
+    }
+
+    #endregion
     
     
     private Task<HttpResponseMessage> Receive(string content, HttpStatusCode statusCode = HttpStatusCode.OK)

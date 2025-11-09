@@ -9,15 +9,16 @@ public static class TestTextResponseExtensions
     // - an interface! we can have children implement smth like ICanSucceed<TResult>
     //   - but now dto class is ICanSucceed x2.. method either will require a type parameter or a custom extension anyway
     //     - can do an experiment later
-    public static async Task<string?> ShouldSucceed(this Task<TestTextResponse> responseTask)
+    public static async Task<string> ShouldSucceed(this Task<TestTextResponse> responseTask)
     {
         var testResponse = await responseTask;
         await testResponse.Read();
-        
+
         testResponse.ShouldHaveStatusCode(200..299);
 
         return testResponse.AsText;
     }
     // TODO: Maybe TestResponse can hold expected status code so client can set it and ShouldSucceed can use it
     // TODO: ShouldSucceed(withStatus) x3
+    // TODO: maybe a code generation for ShouldSucceed
 }
