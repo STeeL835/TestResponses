@@ -4,7 +4,7 @@ using RichardSzalay.MockHttp;
 using TestClientResponse.Tests.Utilities;
 using TestClientResponse.Text;
 
-namespace TestClientResponse.Tests;
+namespace TestClientResponse.Tests.Tests.Utilities;
 
 public class ShouldHaveStatusCodeTests
 {

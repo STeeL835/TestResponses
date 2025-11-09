@@ -5,7 +5,7 @@ using TestClientResponse.Json;
 using TestClientResponse.Tests.Dto;
 using TestClientResponse.Tests.Utilities;
 
-namespace TestClientResponse.Tests;
+namespace TestClientResponse.Tests.Tests.Responses;
 
 public class TestJsonResponseTests
 {
