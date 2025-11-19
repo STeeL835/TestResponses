@@ -4,10 +4,9 @@ var app = builder.Build();
 
 var weatherData = new Dictionary<string, Dictionary<DateOnly, int>>()
 {
-    ["Saratov"] = new()
-    {
-        [DateOnly.FromDateTime(DateTime.Today)] = 15
-    }
+    ["Saratov"] = new() { [DateOnly.FromDateTime(DateTime.Today)] = 15 },
+    ["Balakovo"] = new() { [DateOnly.FromDateTime(DateTime.Today.AddDays(1))] = 16 },
+    ["Kuybyshev"] = new() { [DateOnly.FromDateTime(DateTime.Today)] = 13 },
 };
 
 app.MapGet("/weather/{city}/today", (string city) =>

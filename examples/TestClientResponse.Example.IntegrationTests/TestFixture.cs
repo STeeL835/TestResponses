@@ -4,13 +4,18 @@ namespace TestClientResponse.Example.IntegrationTests;
 
 public class TestFixture : IAsyncLifetime
 {
-    internal WebApplicationFactory<Program> Factory { get; set; }
-    public HttpClient Client { get; set; }
+    internal WebApplicationFactory<Program> AppFactory { get; set; }
+    
+    public HttpClient HttpClient { get; set; }
+    
+    public IServiceProvider AppServices { get; set; }
+    
     
     public Task InitializeAsync()
     {
-        Factory = new WebApplicationFactory<Program>();
-        Client = Factory.CreateClient();
+        AppFactory = new WebApplicationFactory<Program>();
+        HttpClient = AppFactory.CreateClient();
+        AppServices =  AppFactory.Services;
         
         return Task.CompletedTask;
     }
