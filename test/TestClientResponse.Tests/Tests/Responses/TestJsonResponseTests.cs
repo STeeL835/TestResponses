@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Mime;
+using Microsoft.AspNetCore.Mvc;
 using RichardSzalay.MockHttp;
 using TestClientResponse.Json;
 using TestClientResponse.Tests.Dto;
@@ -13,7 +14,7 @@ public class TestJsonResponseTests
     [Theory]
     [InlineData("<html><head><title>Service Not Started</title></head></html>")]
     [InlineData("[1, 2, 3]")]
-    public async Task Read_ResponseIsNotDeserialized_NotJson_ShouldShowResponseAsString(string json)
+    public async Task Read_ResponseIsNotDeserialized_NotJson_ShouldNotThrow(string json)
     {
         var httpResponse = await Receive(json);
         
@@ -146,6 +147,36 @@ public class TestJsonResponseTests
         testResponse.StatusCode.Should().Be(statusCode);
         testResponse.AsText.Should().Be(json);
         testResponse.AsDto.Should().Be(weather);
+    }
+
+    #endregion
+
+    #region As<T>
+
+    [Fact]
+    public async Task AsDto_ResponseIsRead_ButWrongType_ShouldDeserializeIntoNeededType()
+    {
+        const string json = """{ "type": "NotFound", "title": "Not found", "status": 404, "detail": "City 'Pokrovsk' not found, maybe you meant 'Engels'" }""";
+        var expectedDetails = new ProblemDetails()
+        {
+            Type = "NotFound",
+            Status = 404,
+            Title = "Not found",
+            Detail = "City 'Pokrovsk' not found, maybe you meant 'Engels'",
+        };
+
+        var httpResponse = await Receive(json, HttpStatusCode.NotFound);
+
+        var testResponse = new TestJsonResponse<Weather>(httpResponse);
+        await testResponse.Read();
+
+        testResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        testResponse.IsRead.Should().BeTrue();
+        testResponse.AsText.Should().Be(json);
+        testResponse.IsDtoReadSuccessfully.Should().BeFalse();
+
+        var explicitResponse = testResponse.As<ProblemDetails>();
+        explicitResponse.Should().BeEquivalentTo(expectedDetails);
     }
 
     #endregion

@@ -10,6 +10,9 @@ public record TestJsonResponse<TDto>(HttpResponseMessage HttpResponse) : TestTex
 
     public bool IsDtoReadSuccessfully => _dtoReadResult?.IsReadSuccessfully ?? IsRead;
     public TDto? AsDto => GetReadValue(_dtoReadResult!);
+    
+    public T? As<T>() => JsonSerializer.Deserialize<T>(AsText, TestJsonResponseOptions.SerializerOptions);
+    
 
     protected override async Task ReadResponse()
     {
@@ -17,11 +20,11 @@ public record TestJsonResponse<TDto>(HttpResponseMessage HttpResponse) : TestTex
         _dtoReadResult = DeserializeDtoWithDelayedException(responseText);
     }
 
-    private static ValueReadResult<TDto> DeserializeDtoWithDelayedException(string stringResponse)
+    private static ValueReadResult<TDto> DeserializeDtoWithDelayedException(string textResponse)
     {
         try
         {
-            var dto = JsonSerializer.Deserialize<TDto>(stringResponse, TestJsonResponseOptions.SerializerOptions);
+            var dto = JsonSerializer.Deserialize<TDto>(textResponse, TestJsonResponseOptions.SerializerOptions);
             return new ValueReadResult<TDto>(dto, null);
         }
         catch (JsonException ex)
@@ -29,6 +32,7 @@ public record TestJsonResponse<TDto>(HttpResponseMessage HttpResponse) : TestTex
             return new ValueReadResult<TDto>(default, ex);
         }
     }
+
 
     [DoesNotReturn]
     protected override void ThrowAssertionException(string message, Exception? innerException = null)
