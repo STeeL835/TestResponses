@@ -1,8 +1,7 @@
 <Solution>
-  <Folder Name="/Solution Files/">
-    <File Path="Directory.Build.props" />
-    <File Path="Directory.Packages.props" />
-    <File Path="README.md" />
+  <Folder Name="/examples/">
+    <Project Path="examples\TestClientResponse.Example.App\TestClientResponse.Example.App.csproj" Type="Classic C#" />
+    <Project Path="examples\TestClientResponse.Example.IntegrationTests\TestClientResponse.Example.IntegrationTests.csproj" Type="Classic C#" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/TestClientResponse/TestClientResponse.csproj" />
@@ -10,5 +9,10 @@
   <Folder Name="/test/">
     <Project Path="test\TestClientResponse.Tests\TestClientResponse.Tests.csproj" Type="Classic C#" />
     <File Path="test\Directory.Build.props" />
+  </Folder>
+  <Folder Name="/_solution/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="README.md" />
   </Folder>
 </Solution>
