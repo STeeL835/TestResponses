@@ -111,11 +111,12 @@ public class TestJsonResponseTests
         action.Should().Throw<TestResponseException>();
     }
     
-    [Fact]
-    public async Task AsDto_ResponseNotDeserialized_ShouldThrowException()
+    [Theory]
+    [InlineData("""[{ "City": "Saratov", "Date": "2025-09-11", "TemperatureC": 6 }]""")] // array
+    [InlineData("""{ "Town": "Saratov", "Date": "2025-09-11", "TemperatureC": 6 }""")] // unknown property
+    [InlineData("""{ "City": "Saratov", "TemperatureC": 6 }""")] // missing non-null property
+    public async Task AsDto_ResponseNotDeserialized_ShouldThrowException(string json)
     {
-        const string json = """[{ "City": "Saratov", "Date": "2025-09-11", "TemperatureC": 6 }]"""; // array
-
         var httpResponse = await Receive(json);
         
         var testResponse = new TestJsonResponse<Weather>(httpResponse);
@@ -288,5 +289,4 @@ public class TestJsonResponseTests
         return TestHttpClient.ReceiveResponse(r =>
             r.Respond(statusCode, MediaTypeNames.Application.Json, content));
     }
-    
 }

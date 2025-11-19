@@ -1,5 +1,6 @@
 ﻿using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace TestClientResponse.Json;
 
@@ -9,6 +10,9 @@ public static class TestJsonResponseOptions
     {
         AllowTrailingCommas = true,
         ReadCommentHandling = JsonCommentHandling.Skip,
+        UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow,
+        RespectNullableAnnotations = true,
+        RespectRequiredConstructorParameters = true,
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, // non-latin characters without encoding
         WriteIndented = true,
     };

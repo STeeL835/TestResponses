@@ -30,7 +30,7 @@ public abstract record TestResponse(HttpResponseMessage HttpResponse)
             throw new TestResponseException($"Response is not read. Call {nameof(Read)}() before accessing response content");
         
         if (!value.IsReadSuccessfully) 
-            ThrowAssertionException("Response could not be deserialized (see inner exception)", value.ExceptionHappenedDuringRead);
+            ThrowAssertionException($"Response could not be read as {typeof(T).Name} (see inner exception)", value.ExceptionHappenedDuringRead);
         
         return value.Value;
     }
