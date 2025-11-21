@@ -11,12 +11,16 @@ public abstract record TestResponse(HttpResponseMessage HttpResponse)
 
     public async Task Read()
     {
-        if (IsRead) return; // TODO: Test it's not read
+        if (IsRead) return; // TODO: Test it's not read twice
         await ReadResponse();
         IsRead = true; 
     }
     
     protected abstract Task ReadResponse();
+
+    #endregion
+
+    #region Get values
 
     protected T GetReadValue<T>(T value) 
     {
@@ -37,9 +41,39 @@ public abstract record TestResponse(HttpResponseMessage HttpResponse)
 
     #endregion
 
-    #region StatusCode
+    #region Status code
 
     public HttpStatusCode StatusCode => HttpResponse.StatusCode;
+
+    #region Expected status codes
+
+    private Range? _expectedStatusCodes;
+    public Range? ExpectedStatusCodes
+    {
+        get => _expectedStatusCodes;
+        set 
+        {
+            if (value.HasValue) ValidateStatusCodeRange(value.Value);
+            _expectedStatusCodes = value; 
+        }
+    } 
+    
+    public int ExpectedStatusCode
+    {
+        set => ExpectedStatusCodes = value..value;
+    }
+
+    
+    public void ShouldHaveExpectedStatusCode()
+    {
+        if (!_expectedStatusCodes.HasValue) throw new TestResponseException("Expected status codes are not set"); 
+        
+        ShouldHaveStatusCode(_expectedStatusCodes.Value);
+    }
+
+    #endregion
+
+    #region Status code assertions
 
     public void ShouldHaveStatusCode(HttpStatusCode expectedStatusCode) => ShouldHaveStatusCode((int)expectedStatusCode);
 
@@ -54,16 +88,8 @@ public abstract record TestResponse(HttpResponseMessage HttpResponse)
 
     public void ShouldHaveStatusCode(Range expectedStatusCodes)
     {
-        if (expectedStatusCodes.Start.IsFromEnd || expectedStatusCodes.End.IsFromEnd)
-            throw new ArgumentException("Expected status code can't use 'from end' index", nameof(expectedStatusCodes));
-        
-        if (expectedStatusCodes.Start.Value is < 100 or > 599 ||
-            expectedStatusCodes.End.Value is < 100 or > 599)
-            throw new ArgumentException("Expected status codes must be within range of HTTP status codes (100-599)", nameof(expectedStatusCodes));
+        ValidateStatusCodeRange(expectedStatusCodes);
 
-        if (expectedStatusCodes.Start.Value > expectedStatusCodes.End.Value)
-            throw new ArgumentException("Expected status codes range was inverted (start was bigger than end", nameof(expectedStatusCodes));
-        
         var statusCodeInt = (int)StatusCode;
         var startBoundarySatisfied = expectedStatusCodes.Start.Value <= statusCodeInt;
         var endBoundarySatisfied = statusCodeInt <= expectedStatusCodes.End.Value;
@@ -71,6 +97,21 @@ public abstract record TestResponse(HttpResponseMessage HttpResponse)
         if (!(startBoundarySatisfied && endBoundarySatisfied))
             ThrowAssertionException($"Response status code is not in range {expectedStatusCodes}");
     }
+
+    private static void ValidateStatusCodeRange(Range statusCodeRange)
+    {
+        if (statusCodeRange.Start.IsFromEnd || statusCodeRange.End.IsFromEnd)
+            throw new ArgumentException("Expected status code can't use 'from end' index", nameof(statusCodeRange));
+        
+        if (statusCodeRange.Start.Value is < 100 or > 599 ||
+            statusCodeRange.End.Value is < 100 or > 599)
+            throw new ArgumentException("Expected status codes must be within range of HTTP status codes (100-599)", nameof(statusCodeRange));
+
+        if (statusCodeRange.Start.Value > statusCodeRange.End.Value)
+            throw new ArgumentException("Expected status codes range was inverted (start was bigger than end)", nameof(statusCodeRange));
+    }
+
+    #endregion
 
     #endregion
     

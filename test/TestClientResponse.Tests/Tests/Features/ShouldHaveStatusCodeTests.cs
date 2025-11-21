@@ -4,7 +4,7 @@ using RichardSzalay.MockHttp;
 using TestClientResponse.Tests.Utilities;
 using TestClientResponse.Text;
 
-namespace TestClientResponse.Tests.Tests.Utilities;
+namespace TestClientResponse.Tests.Tests.Features;
 
 public class ShouldHaveStatusCodeTests
 {
@@ -105,10 +105,15 @@ public class ShouldHaveStatusCodeTests
             .WithMessage("Response status code is not 429*");
     }
 
+    public static TheoryData<int> IncorrectStatusTestCases =>
+    [
+        -1,
+        0,
+        99,
+        600
+    ];
     [Theory]
-    [InlineData(-1)] 
-    [InlineData(99)] 
-    [InlineData(600)]
+    [MemberData(nameof(IncorrectStatusTestCases))] 
     public async Task Int_StatusCodeIsInvalid_ShouldThrow(int expectedStatusCode)
     {
         var testResponse = await GetReadTestResponseWithCode(HttpStatusCode.OK);
