@@ -12,20 +12,30 @@ A family of HttpResponseMessage decorators that make testing easier and more inf
   - [x] Json<TSuccess>
     - [x] serializer settings
     - [x] As<T> for custom deserialization
+- [ ] Empty (for APIs that should return nothing)
 - [ ] Stream 
   - [ ] File
-  - 
+- [ ] Multipart form?
+- [ ] Grpc?
+
 ### Features (as much response type agnostic as possible)
-- [x] Status assertion
-- [x] Exceptions*
-- [x] HttpResponseMessage converter-reader for client
-- [ ] Read + Assert extension that returns deserialized value*
-  - [ ] how to make universal
-- [ ] Expected status code for client
-  (so that client can set up a success status code and test just assert success without having to know the correct status code)
-  - [ ] storage for status
-  - [ ] converter-reader extension with status code
-  - [ ] status assertion for success
+
+- [ ] Assertions (thinking of a new feature structure)
+  - [x] Assert status code
+    - [ ] Assert expected status code (that can be set up in client)
+  - [ ] Assert response has expected structure 
+    - [x] Deserialized into needed model
+    - [ ] (empty, json, stream, etc)
+      - [ ] Detect real structure and use correct exception (content-type for example)
+  - [ ] Method to assert all
+
+- Exceptions
+    - [x] return info about response
+      (Responses really can be different - empty, text, stream - and if there is a mismatch, exception should still be useful (when empty expected, but returned json - show indented json, if json expected but returned stream - show stream info))
+
+- [ ] Usability
+  - [x] ReadAs to read from HttpMessageResponse Task 
+  - [x] extension that decorates TestResponse Task, and asserts all, and returns deserialized value*
 
 ### Repository
 - [ ] Docs for public classes
@@ -37,6 +47,13 @@ A family of HttpResponseMessage decorators that make testing easier and more inf
 - [x] Example project
   - [ ] Fill it
 - [ ] Rename project to TestResponse
+
+### Other
+
+- [ ]
+
+
+
 
 ## Notes
 - testResponse needs to be read before using
