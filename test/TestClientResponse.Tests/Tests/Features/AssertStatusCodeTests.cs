@@ -6,7 +6,7 @@ using TestClientResponse.Text;
 
 namespace TestClientResponse.Tests.Tests.Features;
 
-public class ShouldHaveStatusCodeTests
+public class AssertStatusCodeTests
 {
     // TestTextResponse is used for tests, but this method is available in all TestResponse inheritors 
     
@@ -19,7 +19,7 @@ public class ShouldHaveStatusCodeTests
     {
         var testResponse = await GetReadTestResponseWithCode(statusCode);
         
-        var action = () => testResponse.ShouldHaveStatusCode(200..299);
+        var action = () => testResponse.AssertStatusCode(200..299);
 
         action.Should().NotThrow();
     }
@@ -31,38 +31,19 @@ public class ShouldHaveStatusCodeTests
     {
         var testResponse = await GetReadTestResponseWithCode(statusCode);
         
-        var action = () => testResponse.ShouldHaveStatusCode(400..499);
+        var action = () => testResponse.AssertStatusCode(400..499);
         
         action.Should().Throw<TestTextResponseAssertionException>()
             .WithMessage("Response status code is not in range 400..499*");
     }
 
-    public static TheoryData<Range> IncorrectRangeTestCases =>
-    [
-        (200..),
-        (..299),
-        (^200..299),
-        (200..^299),
-        (200..600),
-        (99..500),
-        (299..200)
-    ];
-    [Theory, MemberData(nameof(IncorrectRangeTestCases))]
-    public async Task Range_IncorrectValues_ShouldThrow(Range statusCodeRange)
-    {
-        var testResponse = await GetReadTestResponseWithCode(HttpStatusCode.OK);
-        
-        var action = () => testResponse.ShouldHaveStatusCode(statusCodeRange);
-        
-        action.Should().Throw<ArgumentException>();
-    }
-
+    
     [Fact]
     public async Task Enum_StatusCodeMatches_ShouldNotThrow()
     {
         var testResponse = await GetReadTestResponseWithCode(HttpStatusCode.NotFound);
         
-        var action = () => testResponse.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        var action = () => testResponse.AssertStatusCode(HttpStatusCode.NotFound);
 
         action.Should().NotThrow();
     }
@@ -75,7 +56,7 @@ public class ShouldHaveStatusCodeTests
     {
         var testResponse = await GetReadTestResponseWithCode(statusCode);
         
-        var action = () => testResponse.ShouldHaveStatusCode(HttpStatusCode.MethodNotAllowed); // 405
+        var action = () => testResponse.AssertStatusCode(HttpStatusCode.MethodNotAllowed); // 405
         
         action.Should().Throw<TestTextResponseAssertionException>()
             .WithMessage("Response status code is not 405*");
@@ -86,7 +67,7 @@ public class ShouldHaveStatusCodeTests
     {
         var testResponse = await GetReadTestResponseWithCode(HttpStatusCode.Unauthorized);
         
-        var action = () => testResponse.ShouldHaveStatusCode(401);
+        var action = () => testResponse.AssertStatusCode(401);
 
         action.Should().NotThrow();
     }
@@ -99,30 +80,11 @@ public class ShouldHaveStatusCodeTests
     {
         var testResponse = await GetReadTestResponseWithCode(statusCode);
         
-        var action = () => testResponse.ShouldHaveStatusCode(429);
+        var action = () => testResponse.AssertStatusCode(429);
         
         action.Should().Throw<TestTextResponseAssertionException>()
             .WithMessage("Response status code is not 429*");
     }
-
-    public static TheoryData<int> IncorrectStatusTestCases =>
-    [
-        -1,
-        0,
-        99,
-        600
-    ];
-    [Theory]
-    [MemberData(nameof(IncorrectStatusTestCases))] 
-    public async Task Int_StatusCodeIsInvalid_ShouldThrow(int expectedStatusCode)
-    {
-        var testResponse = await GetReadTestResponseWithCode(HttpStatusCode.OK);
-        
-        var action = () => testResponse.ShouldHaveStatusCode(expectedStatusCode);
-
-        action.Should().Throw<ArgumentException>();
-    }
-
     
     
     private async Task<TestTextResponse> GetReadTestResponseWithCode(HttpStatusCode statusCode)

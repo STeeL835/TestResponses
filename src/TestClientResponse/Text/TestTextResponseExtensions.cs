@@ -14,7 +14,7 @@ public static class TestTextResponseExtensions
         var testResponse = await responseTask;
         await testResponse.Read();
 
-        testResponse.ShouldHaveStatusCode(200..299);
+        testResponse.AssertStatusCode(200..299);
 
         return testResponse.AsText;
     }

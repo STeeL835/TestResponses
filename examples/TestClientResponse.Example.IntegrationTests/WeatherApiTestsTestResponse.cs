@@ -45,7 +45,7 @@ public class WeatherApiTestsTestResponse(TestFixture fixture)
     {
         var response = await _weatherApi.GetTodayWeather("Pokrovsk");
         
-        response.ShouldHaveStatusCode(404);
+        response.AssertStatusCode(404);
     }
     
     [Fact] // But actually will help to catch inconsistencies here too, with details in error message
@@ -53,6 +53,6 @@ public class WeatherApiTestsTestResponse(TestFixture fixture)
     {
         var response = await _weatherApi.GetTodayWeather("Kuybyshev");
         
-        response.ShouldHaveStatusCode(404);
+        response.AssertStatusCode(404);
     }
 }

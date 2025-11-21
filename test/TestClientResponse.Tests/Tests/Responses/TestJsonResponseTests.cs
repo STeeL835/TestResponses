@@ -193,7 +193,7 @@ public class TestJsonResponseTests
         var testResponse = new TestJsonResponse<Weather>(httpResponse);
         await testResponse.Read();
         
-        var action = () => testResponse.ShouldHaveStatusCode(500);
+        var action = () => testResponse.AssertStatusCode(500);
 
         action.Should().Throw<TestJsonResponseAssertionException>()
             .WithMessage("""
@@ -216,7 +216,7 @@ public class TestJsonResponseTests
         
         var testResponse = new TestJsonResponse<Weather>(httpResponse);
         
-        var action = () => testResponse.ShouldHaveStatusCode(500);
+        var action = () => testResponse.AssertStatusCode(500);
 
         action.Should().Throw<TestJsonResponseAssertionException>()
             .WithMessage("""
@@ -236,7 +236,7 @@ public class TestJsonResponseTests
         var testResponse = new TestJsonResponse<Weather>(httpResponse);
         await testResponse.Read();
         
-        var action = () => testResponse.ShouldHaveStatusCode(500);
+        var action = () => testResponse.AssertStatusCode(500);
 
         action.Should().Throw<TestJsonResponseAssertionException>()
             .WithMessage("""
@@ -259,7 +259,7 @@ public class TestJsonResponseTests
         var testResponse = new TestJsonResponse<Weather>(httpResponse);
         await testResponse.Read();
         
-        var action = () => testResponse.ShouldHaveStatusCode(500);
+        var action = () => testResponse.AssertStatusCode(500);
 
         action.Should().Throw<TestJsonResponseAssertionException>()
             .WithMessage("""

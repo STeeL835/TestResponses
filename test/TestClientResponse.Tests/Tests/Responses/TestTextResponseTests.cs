@@ -70,7 +70,7 @@ public class TestTextResponseTests
         var testResponse = new TestTextResponse(httpResponse);
         await testResponse.Read();
         
-        var action = () => testResponse.ShouldHaveStatusCode(500);
+        var action = () => testResponse.AssertStatusCode(500);
 
         action.Should().Throw<TestTextResponseAssertionException>()
             .WithMessage("""
@@ -89,7 +89,7 @@ public class TestTextResponseTests
         
         var testResponse = new TestTextResponse(httpResponse);
         
-        var action = () => testResponse.ShouldHaveStatusCode(500);
+        var action = () => testResponse.AssertStatusCode(500);
 
         action.Should().Throw<TestTextResponseAssertionException>()
             .WithMessage("""

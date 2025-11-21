@@ -45,73 +45,24 @@ public abstract record TestResponse(HttpResponseMessage HttpResponse)
 
     public HttpStatusCode StatusCode => HttpResponse.StatusCode;
 
-    #region Expected status codes
-
-    private Range? _expectedStatusCodes;
-    public Range? ExpectedStatusCodes
+    public TestResponseStatusCode? ExpectedStatusCodes { get; set; }
+    
+    public void AssertExpectedStatusCode()
     {
-        get => _expectedStatusCodes;
-        set 
+        if (ExpectedStatusCodes is null) throw new TestResponseException("Expected status codes are not set"); 
+        
+        AssertStatusCode(ExpectedStatusCodes);
+    }
+
+    public void AssertStatusCode(TestResponseStatusCode expectedStatusCode)
+    {
+        if (!expectedStatusCode.IsMatch(StatusCode))
         {
-            if (value.HasValue) ValidateStatusCodeRange(value.Value);
-            _expectedStatusCodes = value; 
+            ThrowAssertionException(expectedStatusCode.IsSingleValue 
+                ? $"Response status code is not {expectedStatusCode}"
+                : $"Response status code is not in range {expectedStatusCode}");
         }
-    } 
-    
-    public int ExpectedStatusCode
-    {
-        set => ExpectedStatusCodes = value..value;
     }
-
-    
-    public void ShouldHaveExpectedStatusCode()
-    {
-        if (!_expectedStatusCodes.HasValue) throw new TestResponseException("Expected status codes are not set"); 
-        
-        ShouldHaveStatusCode(_expectedStatusCodes.Value);
-    }
-
-    #endregion
-
-    #region Status code assertions
-
-    public void ShouldHaveStatusCode(HttpStatusCode expectedStatusCode) => ShouldHaveStatusCode((int)expectedStatusCode);
-
-    public void ShouldHaveStatusCode(int expectedStatusCode)
-    {
-        if (expectedStatusCode is < 100 or > 599)
-            throw new ArgumentException("Expected status code must be within range of HTTP status codes (100-599)", nameof(expectedStatusCode));
-
-        if ((int)StatusCode != expectedStatusCode)
-            ThrowAssertionException($"Response status code is not {expectedStatusCode}");
-    }
-
-    public void ShouldHaveStatusCode(Range expectedStatusCodes)
-    {
-        ValidateStatusCodeRange(expectedStatusCodes);
-
-        var statusCodeInt = (int)StatusCode;
-        var startBoundarySatisfied = expectedStatusCodes.Start.Value <= statusCodeInt;
-        var endBoundarySatisfied = statusCodeInt <= expectedStatusCodes.End.Value;
-        
-        if (!(startBoundarySatisfied && endBoundarySatisfied))
-            ThrowAssertionException($"Response status code is not in range {expectedStatusCodes}");
-    }
-
-    private static void ValidateStatusCodeRange(Range statusCodeRange)
-    {
-        if (statusCodeRange.Start.IsFromEnd || statusCodeRange.End.IsFromEnd)
-            throw new ArgumentException("Expected status code can't use 'from end' index", nameof(statusCodeRange));
-        
-        if (statusCodeRange.Start.Value is < 100 or > 599 ||
-            statusCodeRange.End.Value is < 100 or > 599)
-            throw new ArgumentException("Expected status codes must be within range of HTTP status codes (100-599)", nameof(statusCodeRange));
-
-        if (statusCodeRange.Start.Value > statusCodeRange.End.Value)
-            throw new ArgumentException("Expected status codes range was inverted (start was bigger than end)", nameof(statusCodeRange));
-    }
-
-    #endregion
 
     #endregion
     
