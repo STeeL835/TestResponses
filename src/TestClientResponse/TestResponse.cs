@@ -3,6 +3,24 @@ using System.Net;
 
 namespace TestClientResponse;
 
+/* It goes like this
+    - wrap http response in TestResponse
+        - manually with ctor
+        - or with ReadAs
+    - Read response
+      shouldn't fail here because negative cases are valid for us 
+        - manually
+        - or ReadAs already did it
+    - Use it
+        - assert it hasn't failed and has correct structure at least (status code and response structure assertion
+        - or check status code manually
+        - or check positive case 
+            - response object assertions (structure assertion kicks in here)
+        - or check negative case (like returning 404)
+            - try to get negative case model for assertions (structure assertion kicks in here)
+        - OR use HttpResponseMessage if TestResponse can't help
+ */
+
 public abstract record TestResponse(HttpResponseMessage HttpResponse)
 {
     #region Read
@@ -40,6 +58,14 @@ public abstract record TestResponse(HttpResponseMessage HttpResponse)
     }
 
     #endregion
+    
+    public void AssertValid(TestResponseStatusCode? withStatusCode = null)
+    {
+        if (!IsRead) ThrowAssertionException("Can't assert validity because response is not read");
+        
+        if (withStatusCode is not null) AssertStatusCode(withStatusCode);
+        else if (ExpectedStatusCodes is not null) AssertExpectedStatusCode();
+    }
 
     #region Status code
 
