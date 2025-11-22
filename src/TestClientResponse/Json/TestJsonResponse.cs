@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
+﻿using System.Text.Json;
 using TestClientResponse.Text;
 
 namespace TestClientResponse.Json;
@@ -34,9 +33,5 @@ public record TestJsonResponse<TDto>(HttpResponseMessage HttpResponse) : TestTex
     }
 
 
-    [DoesNotReturn]
-    protected override void ThrowAssertionException(string message, Exception? innerException = null)
-    {
-        throw new TestJsonResponseAssertionException(this, message, innerException);
-    }
+    public override string ToString() => TestJsonResponseFormatter.Format(this);
 }

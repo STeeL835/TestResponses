@@ -1,27 +1,32 @@
-﻿using System.Text.Encodings.Web;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Nodes;
-using TestClientResponse.Text;
 
 namespace TestClientResponse.Json;
 
-public class TestJsonResponseAssertionException(TestTextResponse response, string message, Exception? inner = null)
-    : TestResponseAssertionException<TestTextResponse>(response, message, inner)
+public static class TestJsonResponseFormatter
 {
-    private string? _assertMessage;
-
-    protected override string BuildAssertMessage(string message)
+    public static string Format<T>(TestJsonResponse<T> response)
     {
-        _assertMessage ??= $"""
-            {base.BuildAssertMessage(message)}
-            Response:
-            {(Response.IsRead ? TryFormatAsJson(Response.AsText) : "*not read*")}
+        return $"""
+            {TestResponseFormatter.FormatStatusCodeInfo(response)}
+            {FormatResponseAsJson(response)}
             """;
-
-        return _assertMessage;
     }
 
-    protected string TryFormatAsJson(string json)
+    public static string FormatResponseAsJson<T>(TestJsonResponse<T> response)
+    {
+        return $"""
+            Response:
+            {response switch
+            {
+                { IsRead: false } => "*not read*",
+                { AsText.Length: 0 } => "*empty*",
+                _ => TryFormatAsJson(response.AsText)
+            }}
+            """;
+    }
+    
+    private static string TryFormatAsJson(string json)
     {
         try
         {

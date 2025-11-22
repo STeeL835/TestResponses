@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using TestClientResponse.Text;
 
 namespace TestClientResponse;
 
@@ -19,6 +20,8 @@ namespace TestClientResponse;
         - or check negative case (like returning 404)
             - try to get negative case model for assertions (structure assertion kicks in here)
         - OR use HttpResponseMessage if TestResponse can't help
+        
+    So, when should we detect response structure to use correct type? 
  */
 
 public abstract record TestResponse(HttpResponseMessage HttpResponse)
@@ -30,7 +33,12 @@ public abstract record TestResponse(HttpResponseMessage HttpResponse)
     public async Task Read()
     {
         if (IsRead) return; // TODO: Test it's not read twice
+        
+        // to be able to read httpresponse twice (when response structure fits different class)
+        await HttpResponse.Content.LoadIntoBufferAsync(); 
+        
         await ReadResponse();
+        
         IsRead = true; 
     }
     
@@ -91,7 +99,13 @@ public abstract record TestResponse(HttpResponseMessage HttpResponse)
     }
 
     #endregion
-    
+
     [DoesNotReturn]
-    protected abstract void ThrowAssertionException(string message, Exception? innerException = null);
+    protected void ThrowAssertionException(string message, Exception? innerException = null)
+    {
+        throw new TestResponseAssertionException($"{message}\n{ToString()}", innerException);
+    }
+    
+    
+    public override string ToString() => TestResponseFormatter.Format(this);
 }

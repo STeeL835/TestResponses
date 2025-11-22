@@ -22,12 +22,12 @@ A family of HttpResponseMessage decorators that make testing easier and more inf
 
 - [ ] Assertions (thinking of a new feature structure)
   - [x] Assert status code
-    - [ ] Assert expected status code (that can be set up in client)
+    - [x] Assert expected status code (that can be set up in client)
   - [ ] Assert response has expected structure 
     - [x] Deserialized into needed model
     - [ ] (empty, json, stream, etc)
       - [ ] Detect real structure and use correct exception (content-type for example)
-  - [ ] Method to assert all
+  - [x] Method to assert all
 
 - Exceptions
     - [x] return info about response
@@ -35,7 +35,8 @@ A family of HttpResponseMessage decorators that make testing easier and more inf
 
 - [ ] Usability
   - [x] ReadAs to read from HttpMessageResponse Task 
-  - [x] extension that decorates TestResponse Task, and asserts all, and returns deserialized value*
+  - [x] extension that decorates TestResponse Task, and asserts all, and returns deserialized value (for every type)
+    - [ ] now make it source generated for every type
 
 ### Repository
 - [ ] Docs for public classes

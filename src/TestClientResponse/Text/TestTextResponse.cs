@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace TestClientResponse.Text;
+﻿namespace TestClientResponse.Text;
 
 public record TestTextResponse(HttpResponseMessage HttpResponse) : TestResponse(HttpResponse)
 {
@@ -23,12 +21,9 @@ public record TestTextResponse(HttpResponseMessage HttpResponse) : TestResponse(
         return _asText = await HttpResponse.Content.ReadAsStringAsync(); 
     }
 
-    [DoesNotReturn]
-    protected override void ThrowAssertionException(string message, Exception? innerException = null)
-    {
-        throw new TestTextResponseAssertionException(this, message, innerException);
-    }
-
+    
+    public override string ToString() => TestTextResponseFormatter.Format(this);
+    
     // TODO, TEST: Check the response type header?
     // TODO, TEST: What if response is a stream 
 }

@@ -33,7 +33,7 @@ public class AssertStatusCodeTests
         
         var action = () => testResponse.AssertStatusCode(400..499);
         
-        action.Should().Throw<TestTextResponseAssertionException>()
+        action.Should().Throw<TestResponseAssertionException>()
             .WithMessage("Response status code is not in range 400..499*");
     }
 
@@ -58,7 +58,7 @@ public class AssertStatusCodeTests
         
         var action = () => testResponse.AssertStatusCode(HttpStatusCode.MethodNotAllowed); // 405
         
-        action.Should().Throw<TestTextResponseAssertionException>()
+        action.Should().Throw<TestResponseAssertionException>()
             .WithMessage("Response status code is not 405*");
     }
 
@@ -82,7 +82,7 @@ public class AssertStatusCodeTests
         
         var action = () => testResponse.AssertStatusCode(429);
         
-        action.Should().Throw<TestTextResponseAssertionException>()
+        action.Should().Throw<TestResponseAssertionException>()
             .WithMessage("Response status code is not 429*");
     }
     

@@ -60,6 +60,8 @@ public class TestTextResponseTests
 
     #region Assertion exception
 
+    // TODO: change to formatter tests
+    
     [Fact]
     public async Task AssertionException_ResponseIsRead_ShouldHaveStatusAndResponse()
     {
@@ -72,7 +74,7 @@ public class TestTextResponseTests
         
         var action = () => testResponse.AssertStatusCode(500);
 
-        action.Should().Throw<TestTextResponseAssertionException>()
+        action.Should().Throw<TestResponseAssertionException>()
             .WithMessage("""
                 *Status code: 200 (OK)
                 Response: 
@@ -91,7 +93,7 @@ public class TestTextResponseTests
         
         var action = () => testResponse.AssertStatusCode(500);
 
-        action.Should().Throw<TestTextResponseAssertionException>()
+        action.Should().Throw<TestResponseAssertionException>()
             .WithMessage("""
                 *Status code: 200 (OK)
                 Response: 
@@ -120,9 +122,9 @@ public class TestTextResponseTests
         
         var clientGetResponse = () => Receive(text, HttpStatusCode.BadRequest).ReadAs<TestTextResponse>();
 
-        var action = () => clientGetResponse().ShouldSucceed();
+        var action = () => clientGetResponse().ShouldSucceed(withStatusCode: 200);
 
-        await action.Should().ThrowAsync<TestTextResponseAssertionException>();
+        await action.Should().ThrowAsync<TestResponseAssertionException>();
     }
     
     

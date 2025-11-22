@@ -182,6 +182,8 @@ public class TestJsonResponseTests
     #endregion
     
     #region Assertion exception
+    
+    // TODO: change to formatter tests
 
     [Fact]
     public async Task AssertionException_ResponseIsRead_ShouldHaveStatusAndResponse()
@@ -195,7 +197,7 @@ public class TestJsonResponseTests
         
         var action = () => testResponse.AssertStatusCode(500);
 
-        action.Should().Throw<TestJsonResponseAssertionException>()
+        action.Should().Throw<TestResponseAssertionException>()
             .WithMessage("""
                 *Status code: 200 (OK)
                 Response:
@@ -218,7 +220,7 @@ public class TestJsonResponseTests
         
         var action = () => testResponse.AssertStatusCode(500);
 
-        action.Should().Throw<TestJsonResponseAssertionException>()
+        action.Should().Throw<TestResponseAssertionException>()
             .WithMessage("""
                 *Status code: 200 (OK)
                 Response:
@@ -238,7 +240,7 @@ public class TestJsonResponseTests
         
         var action = () => testResponse.AssertStatusCode(500);
 
-        action.Should().Throw<TestJsonResponseAssertionException>()
+        action.Should().Throw<TestResponseAssertionException>()
             .WithMessage("""
                 *Status code: 200 (OK)
                 Response:
@@ -261,7 +263,7 @@ public class TestJsonResponseTests
         
         var action = () => testResponse.AssertStatusCode(500);
 
-        action.Should().Throw<TestJsonResponseAssertionException>()
+        action.Should().Throw<TestResponseAssertionException>()
             .WithMessage("""
                 *Status code: 200 (OK)
                 Response:
