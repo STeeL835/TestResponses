@@ -20,20 +20,20 @@ A family of HttpResponseMessage decorators that make testing easier and more inf
 
 ### Features (as much response type agnostic as possible)
 
-- [ ] Assertions (thinking of a new feature structure)
+Assertions (thinking of a new feature structure)
   - [x] Assert status code
     - [x] Assert expected status code (that can be set up in client)
-  - [ ] Assert response has expected structure 
+  - [ ] Assert response 
     - [x] Deserialized into needed model
-    - [ ] (empty, json, stream, etc)
-      - [ ] Detect real structure and use correct exception (content-type for example)
+    - [ ] Is supported type (empty, json, stream, etc)
+      - [ ] Detect real response type and use correct response info
   - [x] Method to assert all
 
-- Exceptions
-    - [x] return info about response
-      (Responses really can be different - empty, text, stream - and if there is a mismatch, exception should still be useful (when empty expected, but returned json - show indented json, if json expected but returned stream - show stream info))
+- Response info (status code and well formatted response)
+  - [x] ToString 
+  - [x] Exceptions
 
-- [ ] Usability
+- Usability
   - [x] ReadAs to read from HttpMessageResponse Task 
   - [x] extension that decorates TestResponse Task, and asserts all, and returns deserialized value (for every type)
     - [ ] now make it source generated for every type
