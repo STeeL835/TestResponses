@@ -60,10 +60,8 @@ public class TestTextResponseTests
 
     #region Assertion exception
 
-    // TODO: change to formatter tests
-    
     [Fact]
-    public async Task AssertionException_ResponseIsRead_ShouldHaveStatusAndResponse()
+    public async Task AssertionException_ContainsToString()
     {
         var text = "Lorem ipsum dolor sit amet";
         
@@ -75,15 +73,15 @@ public class TestTextResponseTests
         var action = () => testResponse.AssertStatusCode(500);
 
         action.Should().Throw<TestResponseAssertionException>()
-            .WithMessage("""
-                *Status code: 200 (OK)
-                Response: 
-                Lorem ipsum dolor sit amet
-                """);
+            .WithMessage($"*{testResponse}");
     }
     
+    #endregion
+
+    #region ToString
+
     [Fact]
-    public async Task AssertionException_ResponseIsNotRead_ShouldHaveStatusAndResponse()
+    public async Task ToString_ResponseIsNotRead_ShouldShowResponseAsNotRead()
     {
         var text = "Lorem ipsum dolor sit amet";
         
@@ -91,14 +89,45 @@ public class TestTextResponseTests
         
         var testResponse = new TestTextResponse(httpResponse);
         
-        var action = () => testResponse.AssertStatusCode(500);
+        testResponse.ToString().Should().Be("""
+            Status code: 200 (OK)
+            Response:
+            *not read*
+            """);
+    }
 
-        action.Should().Throw<TestResponseAssertionException>()
-            .WithMessage("""
-                *Status code: 200 (OK)
-                Response: 
-                *not read*
-                """);
+    [Fact]
+    public async Task ToString_ResponseIsRead_ButEmpty_ShouldShowResponseAsEmpty()
+    {
+        var text = "";
+        
+        var httpResponse = await Receive(text);
+        
+        var testResponse = new TestTextResponse(httpResponse);
+        await testResponse.Read();
+        
+        testResponse.ToString().Should().Be("""
+            Status code: 200 (OK)
+            Response:
+            *empty*
+            """);
+    }
+    
+    [Fact]
+    public async Task ToString_ResponseIsRead_ShouldShowResponseAsEmpty()
+    {
+        var text = "Lorem ipsum dolor sit amet";
+        
+        var httpResponse = await Receive(text);
+        
+        var testResponse = new TestTextResponse(httpResponse);
+        await testResponse.Read();
+        
+        testResponse.ToString().Should().Be("""
+            Status code: 200 (OK)
+            Response:
+            Lorem ipsum dolor sit amet
+            """);
     }
 
     #endregion

@@ -181,81 +181,108 @@ public class TestJsonResponseTests
 
     #endregion
     
-    #region Assertion exception
-    
-    // TODO: change to formatter tests
+    #region ToString
 
     [Fact]
-    public async Task AssertionException_ResponseIsRead_ShouldHaveStatusAndResponse()
+    public async Task ToString_ResponseIsNotRead_ShouldShowResponseAsNotRead()
     {
-        const string json = """{ "City": "Saratov", "Date": "2025-09-11", "TemperatureC": 6 }""";
+        var text = "Lorem ipsum dolor sit amet";
+        
+        var httpResponse = await Receive(text);
+        
+        var testResponse = new TestJsonResponse<Weather>(httpResponse);
+        
+        testResponse.ToString().Should().Be("""
+            Status code: 200 (OK)
+            Response:
+            *not read*
+            """);
+    }
 
-        var httpResponse = await Receive(json);
+    [Fact]
+    public async Task ToString_ResponseIsRead_Empty_ShouldShowResponseAsEmpty()
+    {
+        var text = "";
+        
+        var httpResponse = await Receive(text);
         
         var testResponse = new TestJsonResponse<Weather>(httpResponse);
         await testResponse.Read();
         
-        var action = () => testResponse.AssertStatusCode(500);
-
-        action.Should().Throw<TestResponseAssertionException>()
-            .WithMessage("""
-                *Status code: 200 (OK)
-                Response:
-                {
-                  "City": "Saratov",
-                  "Date": "2025-09-11",
-                  "TemperatureC": 6
-                }
-                """);
+        testResponse.ToString().Should().Be("""
+            Status code: 200 (OK)
+            Response:
+            *empty*
+            """);
     }
     
     [Fact]
-    public async Task AssertionException_ResponseIsNotRead_ShouldHaveStatusAndResponse()
+    public async Task ToString_ResponseIsRead_NotJson_ShouldShowResponseAsEmpty()
     {
-        const string json = """{ "City": "Saratov", "Date": "2025-09-11", "TemperatureC": 6 }""";
-
-        var httpResponse = await Receive(json);
+        const string html = "<html><head><title>Service Not Started</title></head></html>";
+        
+        var httpResponse = await Receive(html);
         
         var testResponse = new TestJsonResponse<Weather>(httpResponse);
+        await testResponse.Read();
         
-        var action = () => testResponse.AssertStatusCode(500);
-
-        action.Should().Throw<TestResponseAssertionException>()
-            .WithMessage("""
-                *Status code: 200 (OK)
-                Response:
-                *not read*
-                """);
+        testResponse.ToString().Should().Be("""
+            Status code: 200 (OK)
+            Response:
+            <html><head><title>Service Not Started</title></head></html>
+            """);
     }
     
     [Fact]
-    public async Task AssertionException_ResponseIsNotDeserialized_IncorrectType_ShouldShowResponseAsIndentedJson()
+    public async Task ToString_ResponseIsRead_WrongJsonModel_ShouldShowResponseAsEmpty()
     {
         const string json = """{ "Id": 12, "Name": "John Doe" }""";
-
+        
         var httpResponse = await Receive(json);
         
         var testResponse = new TestJsonResponse<Weather>(httpResponse);
         await testResponse.Read();
         
-        var action = () => testResponse.AssertStatusCode(500);
-
-        action.Should().Throw<TestResponseAssertionException>()
-            .WithMessage("""
-                *Status code: 200 (OK)
-                Response:
-                {
-                  "Id": 12,
-                  "Name": "John Doe"
-                }
-                """);
+        testResponse.ToString().Should().Be("""
+            Status code: 200 (OK)
+            Response:
+            {
+              "Id": 12,
+              "Name": "John Doe"
+            }
+            """);
     }
     
     [Fact]
-    public async Task AssertionException_ResponseIsNotDeserialized_NotJson_ShouldShowResponseAsString()
+    public async Task ToString_ResponseIsRead_CorrectJson_ShouldShowResponseAsEmpty()
     {
-        const string json = "<html><head><title>Service Not Started</title></head></html>";
+        const string json = """{ "City": "Saratov", "Date": "2025-09-11", "TemperatureC": 6 }""";
+        
+        var httpResponse = await Receive(json);
+        
+        var testResponse = new TestJsonResponse<Weather>(httpResponse);
+        await testResponse.Read();
+        
+        testResponse.ToString().Should().Be("""
+            Status code: 200 (OK)
+            Response:
+            {
+              "City": "Saratov",
+              "Date": "2025-09-11",
+              "TemperatureC": 6
+            }
+            """);
+    }
 
+    #endregion
+    
+    #region Assertion exception
+    
+    [Fact]
+    public async Task AssertionException_ContainsToString()
+    {
+        var json = """{ "City": "Saratov", "Date": "2025-09-11", "TemperatureC": 6 }""";
+        
         var httpResponse = await Receive(json);
         
         var testResponse = new TestJsonResponse<Weather>(httpResponse);
@@ -264,11 +291,7 @@ public class TestJsonResponseTests
         var action = () => testResponse.AssertStatusCode(500);
 
         action.Should().Throw<TestResponseAssertionException>()
-            .WithMessage("""
-                *Status code: 200 (OK)
-                Response:
-                <html><head><title>Service Not Started</title></head></html>
-                """);
+            .WithMessage($"*{testResponse}");
     }
 
     #endregion
