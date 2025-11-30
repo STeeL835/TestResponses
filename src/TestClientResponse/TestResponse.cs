@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Net;
-using TestClientResponse.Text;
 
 namespace TestClientResponse;
 
@@ -26,24 +25,33 @@ namespace TestClientResponse;
 
 public abstract record TestResponse(HttpResponseMessage HttpResponse)
 {
+    public HttpStatusCode StatusCode => HttpResponse.StatusCode;
+    
     #region Read
 
     public bool IsRead { get; protected set; }
 
+    private TestResponse? BestFitResponse { get; set; }
+    
     public async Task Read()
     {
-        if (IsRead) return; // TODO: Test it's not read twice
+        if (IsRead) return; // TODO: Test it's not read twice (with custom testResponse) that throws exception if read twice
         
-        // to be able to read httpresponse twice (when response structure fits different class)
-        await HttpResponse.Content.LoadIntoBufferAsync(); 
+        // to be able to read http response twice (when response structure fits different class)
+        await HttpResponse.Content.LoadIntoBufferAsync();
         
         await ReadResponse();
+        
+        if (!CanHandleContentType()) 
+            BestFitResponse = await TestResponseDetector.ReadAsBestFitResponse(HttpResponse);
         
         IsRead = true; 
     }
     
+    // does not constrain the testResponse from trying to read response anyway, but helps to find one that can read the response if suddenly content is not what is expected.
+    internal abstract bool CanHandleContentType();
     protected abstract Task ReadResponse();
-
+    
     #endregion
 
     #region Get values
@@ -66,18 +74,21 @@ public abstract record TestResponse(HttpResponseMessage HttpResponse)
     }
 
     #endregion
-    
+
+    #region Assertions
+
     public void AssertValid(UniStatusCode? withStatusCode = null)
     {
         if (!IsRead) ThrowAssertionException("Can't assert validity because response is not read");
         
         if (withStatusCode is not null) AssertStatusCode(withStatusCode);
         else if (ExpectedStatusCode is not null) AssertExpectedStatusCode();
+        
+        AssertExpectedContentType();
+        //TODO: AssertResponseSchema - jsons for example can have deserialization problems
     }
-
+    
     #region Status code
-
-    public HttpStatusCode StatusCode => HttpResponse.StatusCode;
 
     public UniStatusCode? ExpectedStatusCode { get; set; }
     
@@ -99,13 +110,21 @@ public abstract record TestResponse(HttpResponseMessage HttpResponse)
     }
 
     #endregion
-
-    [DoesNotReturn]
-    protected void ThrowAssertionException(string message, Exception? innerException = null)
+    
+    private void AssertExpectedContentType()
     {
-        throw new TestResponseAssertionException($"{message}\n{ToString()}", innerException);
+        if (BestFitResponse is not null) 
+            ThrowAssertionException($"{GetType().Name} didn't expect content-type '{HttpResponse.Content.Headers.ContentType}'");
     }
     
+    [DoesNotReturn]
+    internal void ThrowAssertionException(string message, Exception? innerException = null)
+    {
+        var responseInfo = BestFitResponse?.ToString() ?? ToString();
+        throw new TestResponseAssertionException($"{message}\n{responseInfo}", innerException);
+    }
+    
+    #endregion
     
     public override string ToString() => TestResponseFormatter.Format(this);
 }

@@ -12,6 +12,12 @@ public record TestJsonResponse<TDto>(HttpResponseMessage HttpResponse) : TestTex
     
     public T? As<T>() => JsonSerializer.Deserialize<T>(AsText, TestJsonResponseOptions.SerializerOptions);
     
+    internal override bool CanHandleContentType()
+    {
+        if (HttpResponse.Content.Headers.ContentType?.MediaType is null) return false;
+        if (HttpResponse.Content.Headers.ContentType.MediaType!.Contains("json")) return true;
+        return false;
+    }
 
     protected override async Task ReadResponse()
     {

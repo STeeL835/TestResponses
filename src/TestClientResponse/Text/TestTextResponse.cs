@@ -11,6 +11,17 @@ public record TestTextResponse(HttpResponseMessage HttpResponse) : TestResponse(
     /// </summary>
     public string AsText => GetReadValue(_asText)!;
 
+    internal override bool CanHandleContentType()
+    {
+        var contentMediaType = HttpResponse.Content.Headers.ContentType?.MediaType; // TODO: maybe a dedicated property?
+        
+        if (contentMediaType is null) return false;
+        if (contentMediaType.StartsWith("text/")) return true;
+        if (contentMediaType.Contains("json")) return true;
+        if (contentMediaType.Contains("xml")) return true;
+        return false;
+    }
+
     protected override async Task ReadResponse()
     {
         await ReadText();
