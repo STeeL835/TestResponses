@@ -67,28 +67,28 @@ public abstract record TestResponse(HttpResponseMessage HttpResponse)
 
     #endregion
     
-    public void AssertValid(TestResponseStatusCode? withStatusCode = null)
+    public void AssertValid(UniStatusCode? withStatusCode = null)
     {
         if (!IsRead) ThrowAssertionException("Can't assert validity because response is not read");
         
         if (withStatusCode is not null) AssertStatusCode(withStatusCode);
-        else if (ExpectedStatusCodes is not null) AssertExpectedStatusCode();
+        else if (ExpectedStatusCode is not null) AssertExpectedStatusCode();
     }
 
     #region Status code
 
     public HttpStatusCode StatusCode => HttpResponse.StatusCode;
 
-    public TestResponseStatusCode? ExpectedStatusCodes { get; set; }
+    public UniStatusCode? ExpectedStatusCode { get; set; }
     
     public void AssertExpectedStatusCode()
     {
-        if (ExpectedStatusCodes is null) throw new TestResponseException("Expected status codes are not set"); 
+        if (ExpectedStatusCode is null) throw new TestResponseException("Expected status codes are not set"); 
         
-        AssertStatusCode(ExpectedStatusCodes);
+        AssertStatusCode(ExpectedStatusCode);
     }
 
-    public void AssertStatusCode(TestResponseStatusCode expectedStatusCode)
+    public void AssertStatusCode(UniStatusCode expectedStatusCode)
     {
         if (!expectedStatusCode.IsMatch(StatusCode))
         {

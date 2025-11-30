@@ -6,7 +6,7 @@ public static class TestTextResponseExtensions
     // - test result shouldn't have more that one main value
     // - attribute not inherited
     // - generic interfaces won't work - they will be inherited, ambiguous for compiler
-    public static async Task<string> ShouldSucceed(this Task<TestTextResponse> responseTask, TestResponseStatusCode? withStatusCode = null)
+    public static async Task<string> ShouldSucceed(this Task<TestTextResponse> responseTask, UniStatusCode? withStatusCode = null)
     {
         var testResponse = await responseTask;
         await testResponse.Read();

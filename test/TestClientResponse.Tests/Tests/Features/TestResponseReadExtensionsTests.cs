@@ -5,7 +5,7 @@ using TestClientResponse.Text;
 
 namespace TestClientResponse.Tests.Tests.Features;
 
-public class TestResponseConvertersTests
+public class TestResponseReadExtensionsTests
 {
     [Fact]
     public async Task ReadAs_ShouldReturnReadTestResponse()

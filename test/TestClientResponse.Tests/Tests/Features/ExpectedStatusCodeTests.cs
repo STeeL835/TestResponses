@@ -15,14 +15,14 @@ public class ExpectedStatusCodeTests
 
         var testResponse = new TestTextResponse(responseMessage)
         {
-            ExpectedStatusCodes = 200
+            ExpectedStatusCode = 200
         };
 
         await testResponse.Read();
         
         var action = () => testResponse.AssertExpectedStatusCode();
 
-        testResponse.ExpectedStatusCodes.Range.Should().Be(200..200);
+        testResponse.ExpectedStatusCode.Range.Should().Be(200..200);
         action.Should().NotThrow<TestResponseAssertionException>();
     }
     
@@ -33,7 +33,7 @@ public class ExpectedStatusCodeTests
 
         var testResponse = new TestTextResponse(responseMessage)
         {
-            ExpectedStatusCodes = 201
+            ExpectedStatusCode = 201
         };
 
         await testResponse.Read();

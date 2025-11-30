@@ -2,13 +2,13 @@
 
 namespace TestClientResponse;
 
-public record TestResponseStatusCode
+public record UniStatusCode
 {
-    public TestResponseStatusCode(HttpStatusCode statusCode) : this((int) statusCode) { }
+    public UniStatusCode(HttpStatusCode statusCode) : this((int) statusCode) { }
     
-    public TestResponseStatusCode(int statusCode) : this(statusCode..statusCode) { }
+    public UniStatusCode(int statusCode) : this(statusCode..statusCode) { }
 
-    public TestResponseStatusCode(Range statusCode)
+    public UniStatusCode(Range statusCode)
     {
         if (statusCode.Start.IsFromEnd || statusCode.End.IsFromEnd)
             throw new ArgumentException("Expected status code can't use 'from end' index", nameof(statusCode));
@@ -26,9 +26,9 @@ public record TestResponseStatusCode
     public Range Range { get; }
     public bool IsSingleValue => Range.Start.Value == Range.End.Value;
     
-    public static implicit operator TestResponseStatusCode (HttpStatusCode statusCode) => new (statusCode);
-    public static implicit operator TestResponseStatusCode (int statusCode) => new (statusCode);
-    public static implicit operator TestResponseStatusCode (Range statusCodes) => new (statusCodes);
+    public static implicit operator UniStatusCode (HttpStatusCode statusCode) => new (statusCode);
+    public static implicit operator UniStatusCode (int statusCode) => new (statusCode);
+    public static implicit operator UniStatusCode (Range statusCodes) => new (statusCodes);
     
     public bool IsMatch(HttpStatusCode statusCode) => IsMatch((int)statusCode);
 

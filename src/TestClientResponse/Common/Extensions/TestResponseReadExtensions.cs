@@ -1,19 +1,26 @@
 ﻿namespace TestClientResponse;
 
-public static class TestResponseConverters
+public static class TestResponseReadExtensions
 {
-    public static async Task<TTestResponse> ReadAs<TTestResponse>(this Task<HttpResponseMessage> responseTask) where TTestResponse : TestResponse
+    public static async Task<TTestResponse> ReadAs<TTestResponse>(
+        this Task<HttpResponseMessage> responseTask, 
+        UniStatusCode? expectedStatusCode = null) 
+        where TTestResponse : TestResponse
     {
-        return await ReadAs<TTestResponse>(await responseTask);
+        return await ReadAs<TTestResponse>(await responseTask, expectedStatusCode);
     }
     
-    public static async Task<TTestResponse> ReadAs<TTestResponse>(this HttpResponseMessage httpResponse) where TTestResponse : TestResponse
+    public static async Task<TTestResponse> ReadAs<TTestResponse>(
+        this HttpResponseMessage httpResponse, 
+        UniStatusCode? expectedStatusCode = null) 
+        where TTestResponse : TestResponse
     {
-        // TODO: source generation for instantiation
         try
         {
             var testResponse = Activator.CreateInstance(typeof(TTestResponse), httpResponse) as TTestResponse;
-            await testResponse!.Read();
+            testResponse!.ExpectedStatusCode = expectedStatusCode;
+            
+            await testResponse.Read();
             return testResponse;
         }
         catch (MissingMethodException ex)

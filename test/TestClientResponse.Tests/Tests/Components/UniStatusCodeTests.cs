@@ -2,7 +2,7 @@
 
 namespace TestClientResponse.Tests.Tests.Components;
 
-public class TestResponseStatusCodeTests
+public class UniStatusCodeTests
 {
     #region Range ctor
 
@@ -16,7 +16,7 @@ public class TestResponseStatusCodeTests
     [Theory, MemberData(nameof(CorrectRangeTestCases))]
     public void CtorRange_CorrectValues_ShouldNotThrow(Range statusCodeRange)
     {
-        var action = () => new TestResponseStatusCode(statusCodeRange);
+        var action = () => new UniStatusCode(statusCodeRange);
         
         action.Should().NotThrow<ArgumentException>();
     }
@@ -34,7 +34,7 @@ public class TestResponseStatusCodeTests
     [Theory, MemberData(nameof(IncorrectRangeTestCases))]
     public void CtorRange_IncorrectValues_ShouldThrow(Range statusCodeRange)
     {
-        var action = () => new TestResponseStatusCode(statusCodeRange);
+        var action = () => new UniStatusCode(statusCodeRange);
         
         action.Should().Throw<ArgumentException>();
     }
@@ -42,7 +42,7 @@ public class TestResponseStatusCodeTests
     [Fact]
     public void CtorRange_RangeIsSingleValue_ShouldSaySingleValue()
     {
-        var testStatusCode = new TestResponseStatusCode(200..200);
+        var testStatusCode = new UniStatusCode(200..200);
         
         testStatusCode.Range.Should().Be(200..200);
         testStatusCode.IsSingleValue.Should().BeTrue();
@@ -52,7 +52,7 @@ public class TestResponseStatusCodeTests
     [Fact]
     public void CtorRange_RangeIsNotSingleValue_ShouldSaySingleValue()
     {
-        var testStatusCode = new TestResponseStatusCode(400..599);
+        var testStatusCode = new UniStatusCode(400..599);
         
         testStatusCode.Range.Should().Be(400..599);
         testStatusCode.IsSingleValue.Should().BeFalse();
@@ -73,7 +73,7 @@ public class TestResponseStatusCodeTests
     [Theory, MemberData(nameof(CorrectEnumTestCases))]
     public void CtorEnum_CorrectValues_ShouldNotThrow(HttpStatusCode statusCodeRange)
     {
-        var action = () => new TestResponseStatusCode(statusCodeRange);
+        var action = () => new UniStatusCode(statusCodeRange);
         
         action.Should().NotThrow<ArgumentException>();
     }
@@ -88,7 +88,7 @@ public class TestResponseStatusCodeTests
     [Theory, MemberData(nameof(IncorrectEnumTestCases))]
     public void CtorEnum_IncorrectValues_ShouldThrow(HttpStatusCode statusCodeRange)
     {
-        var action = () => new TestResponseStatusCode(statusCodeRange);
+        var action = () => new UniStatusCode(statusCodeRange);
         
         action.Should().Throw<ArgumentException>();
     }
@@ -96,7 +96,7 @@ public class TestResponseStatusCodeTests
     [Fact]
     public void CtorEnum_ShouldMakeCorrectRange()
     {
-        var testStatusCode = new TestResponseStatusCode(HttpStatusCode.OK);
+        var testStatusCode = new UniStatusCode(HttpStatusCode.OK);
         
         testStatusCode.Range.Should().Be(200..200);
         testStatusCode.IsSingleValue.Should().BeTrue();
@@ -111,7 +111,7 @@ public class TestResponseStatusCodeTests
     [Theory, MemberData(nameof(CorrectIntTestCases))]
     public void CtorInt_CorrectValues_ShouldNotThrow(int statusCodeRange)
     {
-        var action = () => new TestResponseStatusCode(statusCodeRange);
+        var action = () => new UniStatusCode(statusCodeRange);
         
         action.Should().NotThrow<ArgumentException>();
     }
@@ -120,7 +120,7 @@ public class TestResponseStatusCodeTests
     [Theory, MemberData(nameof(IncorrectIntTestCases))]
     public void CtorInt_IncorrectValues_ShouldThrow(int statusCodeRange)
     {
-        var action = () => new TestResponseStatusCode(statusCodeRange);
+        var action = () => new UniStatusCode(statusCodeRange);
         
         action.Should().Throw<ArgumentException>();
     }
@@ -128,7 +128,7 @@ public class TestResponseStatusCodeTests
     [Fact]
     public void CtorInt_ShouldMakeCorrectRange()
     {
-        var testStatusCode = new TestResponseStatusCode(200);
+        var testStatusCode = new UniStatusCode(200);
         
         testStatusCode.Range.Should().Be(200..200);
         testStatusCode.IsSingleValue.Should().BeTrue();
@@ -146,7 +146,7 @@ public class TestResponseStatusCodeTests
     [InlineData((HttpStatusCode)299)]
     public void IsMatch_StatusCodeMatches_ShouldReturnTrue(HttpStatusCode statusCode)
     {
-        TestResponseStatusCode testStatusCode = 200..299;
+        UniStatusCode testStatusCode = 200..299;
         
         var result = testStatusCode.IsMatch(statusCode);
 
@@ -158,7 +158,7 @@ public class TestResponseStatusCodeTests
     [InlineData(HttpStatusCode.InternalServerError)]
     public void IsMatch_StatusCodeDoesNotMatch_ShouldReturnFalse(HttpStatusCode statusCode)
     {
-        TestResponseStatusCode testStatusCode = 400..499;
+        UniStatusCode testStatusCode = 400..499;
         
         var result = testStatusCode.IsMatch(statusCode);
 
