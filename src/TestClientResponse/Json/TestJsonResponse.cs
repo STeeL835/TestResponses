@@ -39,5 +39,5 @@ public record TestJsonResponse<TDto>(HttpResponseMessage HttpResponse) : TestTex
     }
 
 
-    public override string ToString() => TestJsonResponseFormatter.Format(this);
+    protected override string GetInfoString() => TestJsonResponseFormatter.Format(this);
 }

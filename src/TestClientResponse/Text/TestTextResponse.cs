@@ -33,7 +33,7 @@ public record TestTextResponse(HttpResponseMessage HttpResponse) : TestResponse(
     }
 
     
-    public override string ToString() => TestTextResponseFormatter.Format(this);
+    protected override string GetInfoString() => TestTextResponseFormatter.Format(this);
     
     // TODO, TEST: Check the response type header?
     // TODO, TEST: What if response is a stream 

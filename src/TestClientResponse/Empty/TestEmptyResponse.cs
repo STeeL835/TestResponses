@@ -6,7 +6,7 @@ public record TestEmptyResponse(HttpResponseMessage HttpResponse) : TestResponse
 
     protected override Task ReadResponse() => Task.CompletedTask;
 
-    public override string ToString() => $"""
+    protected override string GetInfoString() => $"""
         {TestResponseFormatter.FormatStatusCodeInfo(this)}
         Response: *empty*
         """;

@@ -6,7 +6,7 @@ public record TestUnknownResponse(HttpResponseMessage HttpResponse) : TestRespon
 
     protected override Task ReadResponse() => Task.CompletedTask;
 
-    public override string ToString() => $"""
+    protected override string GetInfoString() => $"""
         {TestResponseFormatter.FormatStatusCodeInfo(this)}
         Content-Type: {HttpResponse.Content.Headers.ContentType}
         Response can't be shown because of unknown content-type

@@ -118,13 +118,13 @@ public abstract record TestResponse(HttpResponseMessage HttpResponse)
     }
     
     [DoesNotReturn]
-    internal void ThrowAssertionException(string message, Exception? innerException = null)
+    private void ThrowAssertionException(string message, Exception? innerException = null)
     {
-        var responseInfo = BestFitResponse?.ToString() ?? ToString();
-        throw new TestResponseAssertionException($"{message}\n{responseInfo}", innerException);
+        throw new TestResponseAssertionException($"{message}\n{ToString()}", innerException);
     }
     
     #endregion
-    
-    public override string ToString() => TestResponseFormatter.Format(this);
+
+    public override string ToString() => BestFitResponse?.ToString() ?? GetInfoString();
+    protected virtual string GetInfoString() => TestResponseFormatter.Format(this);
 }
