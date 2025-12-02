@@ -56,4 +56,20 @@ public class TestResponseDetectorTests
 
         bestfit.Should().BeOfType<TestUnknownResponse>();
     }
+    
+    [Fact]
+    public async Task ToString_TestEmptyResponse_ActuallyJson_ShouldReturnJsonInfo()
+    {
+        var httpResponse = await TestHttpClient.ReceiveResponse(r => 
+            r.Respond(mediaType: MediaTypeNames.Application.Json, content: "{ \"a\": 3 }"));
+
+        var testResponse = new TestEmptyResponse(httpResponse);
+        await testResponse.Read();
+
+        testResponse.ToString().Should().Contain("""
+            {
+              "a": 3
+            }
+            """);
+    }
 }
