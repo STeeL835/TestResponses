@@ -1,6 +1,6 @@
 ﻿namespace TestClientResponse.Empty;
 
-public record TestEmptyResponse(HttpResponseMessage HttpResponse) : TestResponse(HttpResponse)
+public class TestEmptyResponse(HttpResponseMessage httpResponse) : TestResponse(httpResponse)
 {
     internal override bool CanHandleContentType() => HttpResponse.Content.Headers.ContentType is null;
 

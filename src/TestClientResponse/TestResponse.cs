@@ -23,8 +23,10 @@ namespace TestClientResponse;
     So, when should we detect response structure to use correct type? 
  */
 
-public abstract record TestResponse(HttpResponseMessage HttpResponse)
+public abstract class TestResponse
 {
+    public TestResponse(HttpResponseMessage httpResponse) => HttpResponse = httpResponse;
+    public HttpResponseMessage HttpResponse { get; }
     public HttpStatusCode StatusCode => HttpResponse.StatusCode;
     
     #region Read
@@ -91,7 +93,7 @@ public abstract record TestResponse(HttpResponseMessage HttpResponse)
     #region Status code
 
     public UniStatusCode? ExpectedStatusCode { get; set; }
-    
+
     public void AssertExpectedStatusCode()
     {
         if (ExpectedStatusCode is null) throw new TestResponseException("Expected status codes are not set"); 

@@ -3,7 +3,7 @@ using TestClientResponse.Text;
 
 namespace TestClientResponse.Json;
 
-public record TestJsonResponse<TDto>(HttpResponseMessage HttpResponse) : TestTextResponse(HttpResponse)
+public class TestJsonResponse<TDto>(HttpResponseMessage httpResponse) : TestTextResponse(httpResponse)
 {
     private ValueReadResult<TDto>? _dtoReadResult;
 

@@ -1,6 +1,6 @@
 ﻿namespace TestClientResponse.Text;
 
-public record TestTextResponse(HttpResponseMessage HttpResponse) : TestResponse(HttpResponse)
+public class TestTextResponse(HttpResponseMessage httpResponse) : TestResponse(httpResponse)
 {
     private string? _asText;
     

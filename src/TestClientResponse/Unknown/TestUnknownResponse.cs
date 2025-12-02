@@ -1,6 +1,6 @@
 ﻿namespace TestClientResponse.Unknown;
 
-public record TestUnknownResponse(HttpResponseMessage HttpResponse) : TestResponse(HttpResponse)
+public class TestUnknownResponse(HttpResponseMessage httpResponse) : TestResponse(httpResponse)
 {
     internal override bool CanHandleContentType() => true;
 
