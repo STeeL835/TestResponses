@@ -6,7 +6,7 @@ internal static class TestResponseDetector
 {
     public static async Task<TestResponse> ReadAsBestFitResponse(HttpResponseMessage httpResponse)
     {
-        foreach (var testResponseType in TestResponseConfig.TestResponseTypes)
+        foreach (var testResponseType in TestResponseTypes.Global.List)
         {
             var testResponse = (TestResponse)Activator.CreateInstance(
                 testResponseType.IsGenericTypeDefinition ? testResponseType.MakeGenericType(typeof(object)) : testResponseType,
