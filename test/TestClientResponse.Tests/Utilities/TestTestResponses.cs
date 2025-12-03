@@ -11,15 +11,14 @@ class MarkdownResponse(HttpResponseMessage httpMessage) : TestTextResponse(httpM
 
 abstract class HeaderContentResponse(HttpResponseMessage httpMessage, string headerName) : TestResponse(httpMessage)
 {
-    private string _value;
-    public string Value => GetReadValue(_value);
+    private ResponseValue<string>? _value;
+    public string Value => _value.GetOrThrow()!;
 
     internal override bool CanHandleContentType() => HttpResponse.Headers.Contains(headerName);
-    protected override Task ReadResponse()
+    protected override async Task ReadResponse()
     {
-        if (CanHandleContentType())
-            _value = string.Join("\n", HttpResponse.Headers.GetValues(headerName));
-        return Task.CompletedTask;
+        _value = await ResponseValue.Create(this, () => 
+            Task.FromResult((string?)string.Join("\n", HttpResponse.Headers.GetValues(headerName))));
     }
 }
 

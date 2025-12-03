@@ -126,7 +126,6 @@ public class TestJsonResponseTests
         var action = () => testResponse.AsDto;
 
         testResponse.IsRead.Should().BeTrue();
-        testResponse.IsDtoReadSuccessfully.Should().BeFalse();
         action.Should().Throw<TestResponseAssertionException>();
     }
 
@@ -173,7 +172,6 @@ public class TestJsonResponseTests
         testResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
         testResponse.IsRead.Should().BeTrue();
         testResponse.AsText.Should().Be(json);
-        testResponse.IsDtoReadSuccessfully.Should().BeFalse();
 
         var explicitResponse = testResponse.As<ProblemDetails>();
         explicitResponse.Should().BeEquivalentTo(expectedDetails);

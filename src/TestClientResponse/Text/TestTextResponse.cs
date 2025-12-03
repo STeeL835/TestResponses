@@ -2,14 +2,14 @@
 
 public class TestTextResponse(HttpResponseMessage httpResponse) : TestResponse(httpResponse)
 {
-    private string? _asText;
-    
+    private ResponseValue<string>? _text;
+
     /// <summary>
     /// Response as a text, exactly as received.
     /// If response is actually a text, string can't be null (for example 204 No Content reads an empty string)
     /// If it's null, response is not text (may be a stream)
     /// </summary>
-    public string AsText => GetReadValue(_asText)!;
+    public string AsText => _text.GetOrThrow()!;
 
     internal override bool CanHandleContentType()
     {
@@ -22,14 +22,12 @@ public class TestTextResponse(HttpResponseMessage httpResponse) : TestResponse(h
         return false;
     }
 
-    protected override async Task ReadResponse()
-    {
-        await ReadText();
-    }
+    protected override async Task ReadResponse() => await ReadText();
 
     protected async Task<string> ReadText()
     {
-        return _asText = await HttpResponse.Content.ReadAsStringAsync(); 
+        _text = await ResponseValue.Create(this, async () => await HttpResponse.Content.ReadAsStringAsync());
+        return _text.Value!;
     }
 
     

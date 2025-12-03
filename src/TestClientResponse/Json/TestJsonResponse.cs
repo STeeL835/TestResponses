@@ -5,10 +5,9 @@ namespace TestClientResponse.Json;
 
 public class TestJsonResponse<TDto>(HttpResponseMessage httpResponse) : TestTextResponse(httpResponse)
 {
-    private ValueReadResult<TDto>? _dtoReadResult;
+    private ResponseValue<TDto>? _json;
 
-    public bool IsDtoReadSuccessfully => _dtoReadResult?.IsReadSuccessfully ?? IsRead;
-    public TDto? AsDto => GetReadValue(_dtoReadResult!);
+    public TDto? AsDto => _json.GetOrThrow();
     
     public T? As<T>() => JsonSerializer.Deserialize<T>(AsText, TestJsonResponseOptions.SerializerOptions);
     
@@ -21,23 +20,10 @@ public class TestJsonResponse<TDto>(HttpResponseMessage httpResponse) : TestText
 
     protected override async Task ReadResponse()
     {
-        var responseText = await ReadText();
-        _dtoReadResult = DeserializeDtoWithDelayedException(responseText);
+        await ReadText();
+        
+        _json = await ResponseValue.Create(this, () =>  Task.FromResult(As<TDto>()));
     }
-
-    private static ValueReadResult<TDto> DeserializeDtoWithDelayedException(string textResponse)
-    {
-        try
-        {
-            var dto = JsonSerializer.Deserialize<TDto>(textResponse, TestJsonResponseOptions.SerializerOptions);
-            return new ValueReadResult<TDto>(dto, null);
-        }
-        catch (JsonException ex)
-        {
-            return new ValueReadResult<TDto>(default, ex);
-        }
-    }
-
 
     protected override string GetInfoString() => TestJsonResponseFormatter.Format(this);
 }

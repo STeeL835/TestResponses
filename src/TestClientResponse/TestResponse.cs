@@ -56,27 +56,6 @@ public abstract class TestResponse
     
     #endregion
 
-    #region Get values
-
-    protected T GetReadValue<T>(T value) 
-    {
-        if (!IsRead) throw new TestResponseException($"Response is not read. Call {nameof(Read)}() before accessing response content");
-        return value;
-    }
-    
-    protected T? GetReadValue<T>(ValueReadResult<T> value) 
-    {
-        if (!IsRead) 
-            throw new TestResponseException($"Response is not read. Call {nameof(Read)}() before accessing response content");
-        
-        if (!value.IsReadSuccessfully) 
-            ThrowAssertionException($"Response could not be read as {typeof(T).Name} (see inner exception)", value.ExceptionHappenedDuringRead);
-        
-        return value.Value;
-    }
-
-    #endregion
-
     #region Assertions
 
     public void AssertValid(UniStatusCode? withStatusCode = null)
