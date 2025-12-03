@@ -28,7 +28,9 @@ internal class TestResponseTypes // TODO: test
             ArgumentNullException.ThrowIfNull(assembly);
 
             var assemblyTypes = assembly.GetTypes()
-                .Where(t => !_registeredTypes.Contains(t) && IsTestResponseType(t))
+                .Where(IsTestResponseType)
+                .Where(t => !_registeredTypes.Contains(t))
+                .Where(CanTestResponseTypeBeInstantiated)
                 .ToList();
             
             typesToRegister.AddRange(assemblyTypes);
@@ -37,6 +39,9 @@ internal class TestResponseTypes // TODO: test
         Register(typesToRegister);
     }
 
+    /// <summary> Registers TestResponse type for best-fit response detection (to provide correct response info) </summary>
+    public void Register<T>() where T : TestResponse => Register(typeof(T));
+    
     /// <summary> Registers TestResponse type for best-fit response detection (to provide correct response info) </summary>
     public void Register(params IEnumerable<Type> types)
     {
@@ -72,7 +77,7 @@ internal class TestResponseTypes // TODO: test
     {
         if (type.IsAbstract) return false;
         
-        var ctors = type.GetConstructors(BindingFlags.CreateInstance | BindingFlags.Public);
+        var ctors = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public);
         
         var neededCtor = ctors.Where(c => c.GetParameters().Length == 1)
             .Where(c => c.GetParameters()[0].ParameterType == typeof(HttpResponseMessage));
