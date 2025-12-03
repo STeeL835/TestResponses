@@ -7,7 +7,7 @@ public static class TestJsonResponseExtensions
         var testResponse = await responseTask;
         await testResponse.Read();
         
-        testResponse.AssertStatusCode(200..299);
+        testResponse.AssertStatusCode(200..299); // TODO: pass withstatuscode instead of hard-code
 
         return testResponse.AsDto;
     }
