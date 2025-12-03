@@ -140,7 +140,7 @@ public class TestTextResponseTests
         
         var clientGetResponse = () => Receive(text).ReadAs<TestTextResponse>();
 
-        var response = await clientGetResponse().ShouldSucceed();
+        var response = await clientGetResponse().AssertSucceeded();
 
         response.Should().Be(text);
     }
@@ -152,7 +152,7 @@ public class TestTextResponseTests
         
         var clientGetResponse = () => Receive(text, HttpStatusCode.BadRequest).ReadAs<TestTextResponse>();
 
-        var action = () => clientGetResponse().ShouldSucceed(withStatusCode: 200);
+        var action = () => clientGetResponse().AssertSucceeded(withStatusCode: 200);
 
         await action.Should().ThrowAsync<TestResponseAssertionException>();
     }

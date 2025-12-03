@@ -294,43 +294,43 @@ public class TestJsonResponseTests
 
     #endregion
 
-    #region ShouldSucceed
+    #region AssertSucceeded
 
     [Fact]
-    public async Task ShouldSucceed_SuccessStatusCode_ShouldReturnResponse()
+    public async Task AssertSucceeded_SuccessStatusCode_ShouldReturnResponse()
     {
         var text = "Lorem ipsum dolor sit amet";
         var json = $"\"{text}\"";
         
         var clientGetResponse = () => Receive(json).ReadAs<TestJsonResponse<string>>();
 
-        var response = await clientGetResponse().ShouldSucceed();
+        var response = await clientGetResponse().AssertSucceeded();
 
         response.Should().Be(text);
     }
     
     [Fact]
-    public async Task ShouldSucceed_FailStatusCode_ShouldThrow()
+    public async Task AssertSucceeded_FailStatusCode_ShouldThrow()
     {
         var text = "Lorem ipsum dolor sit amet";
         var json = $"\"{text}\"";
         
         var testResponseTask = Receive(json, HttpStatusCode.BadRequest).ReadAs<TestJsonResponse<string>>();
 
-        var assertion = () => testResponseTask.ShouldSucceed();
+        var assertion = () => testResponseTask.AssertSucceeded();
 
         await assertion.Should().ThrowAsync<TestResponseAssertionException>();
     }
     
     [Fact]
-    public async Task ShouldSucceed_IncorrectModel_ShouldThrow()
+    public async Task AssertSucceeded_IncorrectModel_ShouldThrow()
     {
         var text = "Lorem ipsum dolor sit amet";
         var json = $"\"{text}\"";
         
         var testResponseTask = Receive(json).ReadAs<TestJsonResponse<Weather>>();
 
-        var assertion = () => testResponseTask.ShouldSucceed();
+        var assertion = () => testResponseTask.AssertSucceeded();
 
         await assertion.Should().ThrowAsync<TestResponseAssertionException>();
     }

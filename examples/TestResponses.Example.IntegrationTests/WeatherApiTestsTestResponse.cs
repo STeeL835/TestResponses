@@ -20,7 +20,7 @@ public class WeatherApiTestsTestResponse(TestFixture fixture)
     [Fact] // Or straight to dto
     public async Task GetTodayWeather_CityExists_ShouldReturnForecast2()
     {
-        var weather = await _weatherApi.GetTodayWeather("Saratov").ShouldSucceed();
+        var weather = await _weatherApi.GetTodayWeather("Saratov").AssertSucceeded();
         
         weather!.City.Should().Be("Saratov");
     }
@@ -36,7 +36,7 @@ public class WeatherApiTestsTestResponse(TestFixture fixture)
     [Fact] // We can see that the problem is not the city but the date
     public async Task GetTodayWeather_CityExists_ShouldReturnForecast_ButActuallyDoesNot2()
     {
-        var forecast = await _weatherApi.GetTodayWeather("Balakovo").ShouldSucceed();
+        var forecast = await _weatherApi.GetTodayWeather("Balakovo").AssertSucceeded();
         
         forecast!.City.Should().Be("Balakovo");
     }
@@ -63,7 +63,7 @@ public class WeatherApiTestsTestResponse(TestFixture fixture)
     {
         var forecast = new WeatherForecast("Engels", DateOnly.Parse("2025-11-22"), 5);
         
-        await _weatherApi.PutForecast(forecast).ShouldSucceed(200..299);
+        await _weatherApi.PutForecast(forecast).AssertSucceeded(200..299);
         
         var receivedForecast = await _weatherApi.GetWeather("Balakovo", forecast.Date);
         
@@ -86,27 +86,27 @@ public class WeatherApiTestsTestResponse(TestFixture fixture)
     [Fact] // If API can return different 2xx statuses, either trust the client set expected statuscode
     public async Task AddCity_CityDoesNotExist_ShouldAddACityWith201()
     {
-        await _weatherApi.AddCity("Balashov").ShouldSucceed();
+        await _weatherApi.AddCity("Balashov").AssertSucceeded();
         
-        var cities = await _weatherApi.GetCities().ShouldSucceed();
+        var cities = await _weatherApi.GetCities().AssertSucceeded();
         cities.Should().Contain("Balashov");
     }
     
     [Fact] // No, but really, set in client once, reused by default everywhere else
     public async Task AddCity_CityDoesNotExist_ShouldAddACityWith201_ButActuallyDoesNot()
     {
-        await _weatherApi.AddCity("Kuybyshev").ShouldSucceed();
+        await _weatherApi.AddCity("Kuybyshev").AssertSucceeded();
         
-        var cities = await _weatherApi.GetCities().ShouldSucceed();
+        var cities = await _weatherApi.GetCities().AssertSucceeded();
         cities.Should().Contain("Kuybyshev");
     }
     
     [Fact] // But it can be overriden with needed
     public async Task AddCity_CityDoesExist_ShouldIdempotentlySucceedWith200()
     {
-        await _weatherApi.AddCity("Saratov").ShouldSucceed(200);
+        await _weatherApi.AddCity("Saratov").AssertSucceeded(200);
         
-        var cities = await _weatherApi.GetCities().ShouldSucceed();
+        var cities = await _weatherApi.GetCities().AssertSucceeded();
         cities.Should().Contain("Saratov");
     }
 }
