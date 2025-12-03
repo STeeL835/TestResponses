@@ -13,6 +13,14 @@ public class TestTextResponse(HttpResponseMessage httpResponse) : TestResponse(h
     /// </summary>
     public string AsText => _text.GetOrThrow()!;
 
+    protected override async Task ReadResponse() => await ReadText();
+
+    protected async Task<string> ReadText()
+    {
+        _text = await ResponseValue.Create(this, async () => await HttpResponse.Content.ReadAsStringAsync());
+        return _text.Value!;
+    }
+
     internal override bool CanHandleContentType()
     {
         var contentMediaType = HttpResponse.Content.Headers.ContentType?.MediaType; // TODO: maybe a dedicated property?
@@ -24,17 +32,5 @@ public class TestTextResponse(HttpResponseMessage httpResponse) : TestResponse(h
         return false;
     }
 
-    protected override async Task ReadResponse() => await ReadText();
-
-    protected async Task<string> ReadText()
-    {
-        _text = await ResponseValue.Create(this, async () => await HttpResponse.Content.ReadAsStringAsync());
-        return _text.Value!;
-    }
-
-    
     protected override string GetInfoString() => TestTextResponseFormatter.Format(this);
-    
-    // TODO, TEST: Check the response type header?
-    // TODO, TEST: What if response is a stream 
 }

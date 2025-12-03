@@ -31,8 +31,8 @@ public abstract class TestResponse(HttpResponseMessage httpResponse)
     }
     
     // does not constrain the testResponse from trying to read response anyway, but helps to find one that can read the response if suddenly content is not what is expected.
-    internal abstract bool CanHandleContentType();
     protected abstract Task ReadResponse();
+    internal abstract bool CanHandleContentType();
     
     #endregion
 
@@ -46,11 +46,9 @@ public abstract class TestResponse(HttpResponseMessage httpResponse)
         else if (ExpectedStatusCode is not null) AssertExpectedStatusCode();
         
         AssertExpectedContentType();
-        //TODO: AssertResponseSchema - jsons for example can have deserialization problems
+        AssertResponseSchema();
     }
     
-    #region Status code
-
     public UniStatusCode? ExpectedStatusCode { get; set; }
 
     public void AssertExpectedStatusCode()
@@ -70,13 +68,13 @@ public abstract class TestResponse(HttpResponseMessage httpResponse)
         }
     }
 
-    #endregion
-    
     private void AssertExpectedContentType()
     {
         if (BestFitResponse is not null) 
             ThrowAssertionException($"{GetType().Name} didn't expect content-type '{HttpResponse.Content.Headers.ContentType}'");
     }
+
+    protected virtual void AssertResponseSchema() { /* assume response has no schema by default */ }
     
     [DoesNotReturn]
     private void ThrowAssertionException(string message, Exception? innerException = null)
