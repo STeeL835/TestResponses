@@ -9,7 +9,7 @@ public static class TestJsonResponseExtensions
         var testResponse = await responseTask;
         await testResponse.Read();
         
-        testResponse.AssertValid(withStatusCode);
+        testResponse.AssertValid(withStatusCode ?? 200..299);
 
         return testResponse.AsDto;
     }

@@ -9,6 +9,6 @@ public static class TestEmptyResponseExtensions
         var testResponse = await responseTask;
         await testResponse.Read();
         
-        testResponse.AssertValid(withStatusCode);
+        testResponse.AssertValid(withStatusCode?? 200..299);
     }
 }
