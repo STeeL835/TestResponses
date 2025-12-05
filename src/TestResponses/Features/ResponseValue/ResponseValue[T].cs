@@ -12,7 +12,7 @@ public class ResponseValue<T>
 
     public ResponseValue(TestResponse testResponse) => _testResponse = testResponse;
 
-    public async Task Read(Func<Task<T?>> reader)
+    public async Task Read(Func<Task<T>> reader)
     {
         try
         {

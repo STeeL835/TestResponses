@@ -13,12 +13,9 @@ public class TestTextResponse(HttpResponseMessage httpResponse) : TestResponse(h
     /// </summary>
     public string AsText => _text.GetOrThrow()!;
 
-    protected override async Task ReadResponse() => await ReadText();
-
-    protected async Task<string> ReadText()
+    protected override async Task ReadResponse()
     {
-        _text = await ResponseValue.Create(this, async () => await HttpResponse.Content.ReadAsStringAsync());
-        return _text.Value!;
+        _text = await ResponseValue.Create(this, HttpResponse.Content.ReadAsStringAsync);
     }
 
     internal override bool CanHandleContentType()

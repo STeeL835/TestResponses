@@ -14,9 +14,8 @@ public class TestJsonResponse<TDto>(HttpResponseMessage httpResponse) : TestText
 
     protected override async Task ReadResponse()
     {
-        await ReadText();
-        
-        _json = await ResponseValue.Create(this, () =>  Task.FromResult(As<TDto>()));
+        await base.ReadResponse();
+        _json = ResponseValue.Create(this, As<TDto>)!;
     }
 
     internal override bool CanHandleContentType() => ContentType is not null && ContentType.Contains("json");
