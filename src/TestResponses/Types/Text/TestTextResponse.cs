@@ -23,13 +23,8 @@ public class TestTextResponse(HttpResponseMessage httpResponse) : TestResponse(h
 
     internal override bool CanHandleContentType()
     {
-        var contentMediaType = HttpResponse.Content.Headers.ContentType?.MediaType; // TODO: maybe a dedicated property?
-        
-        if (contentMediaType is null) return false;
-        if (contentMediaType.StartsWith("text/")) return true;
-        if (contentMediaType.Contains("json")) return true;
-        if (contentMediaType.Contains("xml")) return true;
-        return false;
+        return ContentType is not null && 
+               (ContentType.StartsWith("text/") || ContentType.Contains("json") || ContentType.Contains("xml"));
     }
 
     protected override string GetInfoString() => TestTextResponseFormatter.Format(this);

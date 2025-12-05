@@ -19,13 +19,8 @@ public class TestJsonResponse<TDto>(HttpResponseMessage httpResponse) : TestText
         _json = await ResponseValue.Create(this, () =>  Task.FromResult(As<TDto>()));
     }
 
-    internal override bool CanHandleContentType()
-    {
-        if (HttpResponse.Content.Headers.ContentType?.MediaType is null) return false;
-        if (HttpResponse.Content.Headers.ContentType.MediaType!.Contains("json")) return true;
-        return false;
-    }
-    
+    internal override bool CanHandleContentType() => ContentType is not null && ContentType.Contains("json");
+
     protected override void AssertResponseSchema() { _ = AsDto; } // if not read correctly, will throw
 
     protected override string GetInfoString() => TestJsonResponseFormatter.Format(this);
