@@ -26,7 +26,7 @@ public static class TestJsonResponseFormatter
             """;
     }
     
-    private static string TryFormatAsJson(string json)
+    public static string TryFormatAsJson(string json)
     {
         try
         {
