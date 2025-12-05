@@ -18,7 +18,7 @@ public class TestJsonResponse<TDto>(HttpResponseMessage httpResponse) : TestText
         _json = ResponseValue.Create(this, As<TDto>)!;
     }
 
-    internal override bool CanHandleContentType() => ContentType is not null && ContentType.Contains("json");
+    internal override bool CanHandleContent() => ContentType is not null && ContentType.Contains("json");
 
     protected override void AssertResponseSchema() { _ = AsDto; } // if not read correctly, will throw
 

@@ -296,6 +296,9 @@ public class TestJsonResponseTests
 
     #region AssertSucceeded
 
+    // TODO: if expected status is set
+    // TODO: if status is passed as parameter
+    
     [Fact]
     public async Task AssertSucceeded_SuccessStatusCode_ShouldReturnResponse()
     {

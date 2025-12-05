@@ -25,7 +25,7 @@ public abstract class TestResponse(HttpResponseMessage httpResponse)
         
         await ReadResponse();
         
-        if (!CanHandleContentType()) 
+        if (!CanHandleContent()) 
             BestFitResponse = await TestResponseDetector.ReadAsBestFitResponse(HttpResponse);
         
         IsRead = true; 
@@ -33,7 +33,7 @@ public abstract class TestResponse(HttpResponseMessage httpResponse)
     
     // does not constrain the testResponse from trying to read response anyway, but helps to find one that can read the response if suddenly content is not what is expected.
     protected abstract Task ReadResponse();
-    internal abstract bool CanHandleContentType();
+    internal abstract bool CanHandleContent();
     
     #endregion
 

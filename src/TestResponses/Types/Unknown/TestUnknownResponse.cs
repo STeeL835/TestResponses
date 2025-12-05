@@ -2,7 +2,7 @@
 
 public class TestUnknownResponse(HttpResponseMessage httpResponse) : TestResponse(httpResponse)
 {
-    internal override bool CanHandleContentType() => true;
+    internal override bool CanHandleContent() => true;
 
     protected override Task ReadResponse() => Task.CompletedTask;
 

@@ -12,7 +12,7 @@ internal static class TestResponseDetector
                 testResponseType.IsGenericTypeDefinition ? testResponseType.MakeGenericType(typeof(object)) : testResponseType,
                 httpResponse)!;
                 
-            if (testResponse.CanHandleContentType())
+            if (testResponse.CanHandleContent())
             {
                 await testResponse.Read();
                 return testResponse;

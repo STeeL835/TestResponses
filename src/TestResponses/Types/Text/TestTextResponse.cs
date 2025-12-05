@@ -18,7 +18,7 @@ public class TestTextResponse(HttpResponseMessage httpResponse) : TestResponse(h
         _text = await ResponseValue.Create(this, HttpResponse.Content.ReadAsStringAsync);
     }
 
-    internal override bool CanHandleContentType()
+    internal override bool CanHandleContent()
     {
         return ContentType is not null && 
                (ContentType.StartsWith("text/") || ContentType.Contains("json") || ContentType.Contains("xml"));

@@ -15,7 +15,7 @@ abstract class HeaderContentResponse(HttpResponseMessage httpMessage, string hea
     private ResponseValue<string>? _value;
     public string Value => _value.GetOrThrow()!;
 
-    internal override bool CanHandleContentType() => HttpResponse.Headers.Contains(headerName);
+    internal override bool CanHandleContent() => HttpResponse.Headers.Contains(headerName);
     protected override async Task ReadResponse()
     {
         _value = await ResponseValue.Create(this, () => 
