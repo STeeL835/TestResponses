@@ -1,8 +1,9 @@
 ﻿using TestResponses.Features;
+using TestResponses.Streams;
 
 namespace TestResponses.Text;
 
-public class TestTextResponse(HttpResponseMessage httpResponse) : TestResponse(httpResponse)
+public class TestTextResponse(HttpResponseMessage httpResponse) : TestStreamResponse(httpResponse)
 {
     private ResponseValue<string>? _text;
 
@@ -15,6 +16,7 @@ public class TestTextResponse(HttpResponseMessage httpResponse) : TestResponse(h
 
     protected override async Task ReadResponse()
     {
+        await base.ReadResponse();
         _text = await ResponseValue.Create(this, HttpResponse.Content.ReadAsStringAsync);
     }
 
