@@ -1,0 +1,28 @@
+﻿namespace TestResponses.Files;
+
+public static class TestFileResponseFormatter
+{
+    public static string Format(TestFileResponse response)
+    {
+        return $"""
+            {TestResponseFormatter.FormatStatusCodeInfo(response)}
+            File name: {response.File.Name} 
+            File size: {FormatFileSize(response.File.SizeBytes)} ({response.File.SizeBytes} bytes)
+            """;
+    }
+
+    public static string FormatFileSize(long bytes)
+    {
+        string[] postfixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB"];
+        double size = bytes;
+    
+        int postfixIndex = 0;
+        while (size >= 1000)
+        {
+            size /= 1000;
+            postfixIndex++;
+        }
+
+        return $"{size:F2}{postfixes[postfixIndex]}";
+    }
+}
