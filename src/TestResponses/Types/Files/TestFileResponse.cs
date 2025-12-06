@@ -3,6 +3,7 @@ using TestResponses.Streams;
 
 namespace TestResponses.Files;
 
+// TODO: test response
 public class TestFileResponse(HttpResponseMessage httpResponse) : TestStreamResponse(httpResponse)
 {
     private ResponseValue<ResponseFile>? _file;

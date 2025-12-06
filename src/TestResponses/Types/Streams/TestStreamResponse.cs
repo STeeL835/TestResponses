@@ -2,6 +2,7 @@
 
 namespace TestResponses.Streams;
 
+// TODO: test response
 public class TestStreamResponse(HttpResponseMessage httpResponse) : TestResponse(httpResponse)
 {
     private ResponseValue<Stream>? _stream;

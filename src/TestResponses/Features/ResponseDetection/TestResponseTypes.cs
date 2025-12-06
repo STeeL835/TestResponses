@@ -1,11 +1,13 @@
 ﻿using System.Reflection;
 using TestResponses.Empty;
+using TestResponses.Files;
 using TestResponses.Json;
+using TestResponses.Streams;
 using TestResponses.Text;
 
 namespace TestResponses.Features;
 
-internal class TestResponseTypes // TODO: test
+internal class TestResponseTypes
 {
     public static TestResponseTypes Global { get; } = new();
     
@@ -14,6 +16,8 @@ internal class TestResponseTypes // TODO: test
         typeof(TestEmptyResponse),
         typeof(TestJsonResponse<>),
         typeof(TestTextResponse),
+        typeof(TestFileResponse),
+        typeof(TestStreamResponse),
     };
 
     public IReadOnlyList<Type> List => _registeredTypes.AsReadOnly();

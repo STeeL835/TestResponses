@@ -1,5 +1,6 @@
 ﻿namespace TestResponses.Unknown;
 
+// TODO: there are stream and empty response types, maybe this no longer needed
 public class TestUnknownResponse(HttpResponseMessage httpResponse) : TestResponse(httpResponse)
 {
     internal override bool CanHandleContent() => true;

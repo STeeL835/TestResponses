@@ -1,6 +1,8 @@
 ﻿using TestResponses.Empty;
 using TestResponses.Features;
+using TestResponses.Files;
 using TestResponses.Json;
+using TestResponses.Streams;
 using TestResponses.Tests.Utilities;
 using TestResponses.Text;
 
@@ -15,10 +17,10 @@ public class TestResponseTypesTests
         detector.RegisterFromAssemblies(TestAssembly.Instance);
 
         detector.List.Should().ContainInOrder([
-            typeof(MarkdownResponse),
             typeof(JsonPatchResponse),
             typeof(TestJsonResponse<>),
             typeof(TestTextResponse),
+            typeof(TestStreamResponse),
         ], "types must be sorted from most specific to least");
     }
     
@@ -30,6 +32,8 @@ public class TestResponseTypesTests
 
         detector.List.Should().BeEquivalentTo([
             typeof(TestEmptyResponse),
+            typeof(TestStreamResponse),
+            typeof(TestFileResponse),
             typeof(TestJsonResponse<>),
             typeof(TestTextResponse),
             typeof(JsonPatchResponse),

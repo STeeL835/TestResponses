@@ -4,6 +4,7 @@ using RichardSzalay.MockHttp;
 using TestResponses.Empty;
 using TestResponses.Features;
 using TestResponses.Json;
+using TestResponses.Streams;
 using TestResponses.Tests.Utilities;
 using TestResponses.Text;
 using TestResponses.Unknown;
@@ -55,7 +56,7 @@ public class TestResponseDetectorTests
 
         var bestfit = await TestResponseDetector.ReadAsBestFitResponse(httpResponse);
 
-        bestfit.Should().BeOfType<TestUnknownResponse>();
+        bestfit.Should().BeOfType<TestStreamResponse>("if it's not empty, then it's a stream anyway");
     }
     
     [Fact]
