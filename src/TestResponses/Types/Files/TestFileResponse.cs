@@ -8,7 +8,7 @@ public class TestFileResponse(HttpResponseMessage httpResponse) : TestStreamResp
 {
     private ResponseValue<ResponseFile>? _file;
     
-    public ResponseFile File => _file.GetOrThrow()!;
+    public ResponseFile AsFile => _file.GetOrThrow()!;
 
     protected override async Task ReadResponse()
     {

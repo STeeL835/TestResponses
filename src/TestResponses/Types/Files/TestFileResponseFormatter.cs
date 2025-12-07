@@ -6,8 +6,8 @@ public static class TestFileResponseFormatter
     {
         return $"""
             {TestResponseFormatter.FormatStatusCodeInfo(response)}
-            File name: {response.File.Name} 
-            File size: {FormatFileSize(response.File.SizeBytes)} ({response.File.SizeBytes} bytes)
+            File name: {response.AsFile.Name} 
+            File size: {FormatFileSize(response.AsFile.SizeBytes)} ({response.AsFile.SizeBytes} bytes)
             """;
     }
 
