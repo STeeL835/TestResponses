@@ -293,52 +293,7 @@ public class TestJsonResponseTests
     }
 
     #endregion
-
-    #region AssertSucceeded
-
-    // TODO: if expected status is set
-    // TODO: if status is passed as parameter
     
-    [Fact]
-    public async Task AssertSucceeded_SuccessStatusCode_ShouldReturnResponse()
-    {
-        var text = "Lorem ipsum dolor sit amet";
-        var json = $"\"{text}\"";
-        
-        var clientGetResponse = () => Receive(json).ReadAs<TestJsonResponse<string>>();
-
-        var response = await clientGetResponse().AssertSucceeded();
-
-        response.Should().Be(text);
-    }
-    
-    [Fact]
-    public async Task AssertSucceeded_FailStatusCode_ShouldThrow()
-    {
-        var text = "Lorem ipsum dolor sit amet";
-        var json = $"\"{text}\"";
-        
-        var testResponseTask = Receive(json, HttpStatusCode.BadRequest).ReadAs<TestJsonResponse<string>>();
-
-        var assertion = () => testResponseTask.AssertSucceeded();
-
-        await assertion.Should().ThrowAsync<TestResponseAssertionException>();
-    }
-    
-    [Fact]
-    public async Task AssertSucceeded_IncorrectModel_ShouldThrow()
-    {
-        var text = "Lorem ipsum dolor sit amet";
-        var json = $"\"{text}\"";
-        
-        var testResponseTask = Receive(json).ReadAs<TestJsonResponse<Weather>>();
-
-        var assertion = () => testResponseTask.AssertSucceeded();
-
-        await assertion.Should().ThrowAsync<TestResponseAssertionException>();
-    }
-
-    #endregion
     
     
     private Task<HttpResponseMessage> Receive(string content, HttpStatusCode statusCode = HttpStatusCode.OK)

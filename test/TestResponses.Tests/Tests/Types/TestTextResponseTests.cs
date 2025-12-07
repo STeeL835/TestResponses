@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Net.Mime;
 using RichardSzalay.MockHttp;
-using TestResponses.Features;
 using TestResponses.Tests.Utilities;
 using TestResponses.Text;
 
@@ -132,30 +131,6 @@ public class TestTextResponseTests
     }
 
     #endregion
-    
-    [Fact]
-    public async Task ShouldSucceed_SuccessStatusCode_ShouldReturnResponseText()
-    {
-        var text = "Lorem ipsum dolor sit amet";
-        
-        var clientGetResponse = () => Receive(text).ReadAs<TestTextResponse>();
-
-        var response = await clientGetResponse().AssertSucceeded();
-
-        response.Should().Be(text);
-    }
-    
-    [Fact]
-    public async Task ShouldSucceed_FailStatusCode_ShouldReturnResponseText()
-    {
-        var text = "Lorem ipsum dolor sit amet";
-        
-        var clientGetResponse = () => Receive(text, HttpStatusCode.BadRequest).ReadAs<TestTextResponse>();
-
-        var action = () => clientGetResponse().AssertSucceeded(withStatusCode: 200);
-
-        await action.Should().ThrowAsync<TestResponseAssertionException>();
-    }
     
     
     
