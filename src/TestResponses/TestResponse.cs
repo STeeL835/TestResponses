@@ -7,7 +7,7 @@ public abstract class TestResponse(HttpResponseMessage httpResponse)
 {
     public HttpResponseMessage HttpResponse { get; } = httpResponse;
     public HttpStatusCode StatusCode => HttpResponse.StatusCode;
-    protected string? ContentType => HttpResponse.Content.Headers.ContentType?.MediaType;
+    public string? ContentType => HttpResponse.Content.Headers.ContentType?.MediaType;
     
     #region Read
 

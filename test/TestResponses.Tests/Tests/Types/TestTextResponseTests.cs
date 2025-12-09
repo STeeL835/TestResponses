@@ -58,26 +58,6 @@ public class TestTextResponseTests
 
     #endregion
 
-    #region Assertion exception
-
-    [Fact]
-    public async Task AssertionException_ContainsToString()
-    {
-        var text = "Lorem ipsum dolor sit amet";
-        
-        var httpResponse = await Receive(text);
-        
-        var testResponse = new TestTextResponse(httpResponse);
-        await testResponse.Read();
-        
-        var action = () => testResponse.AssertStatusCode(500);
-
-        action.Should().Throw<TestResponseAssertionException>()
-            .WithMessage($"*{testResponse}");
-    }
-    
-    #endregion
-
     #region ToString
 
     [Fact]

@@ -1,6 +1,5 @@
 ﻿namespace TestResponses.Streams;
 
-// TODO: test response
 public class TestStreamResponse(HttpResponseMessage httpResponse) : TestResponse(httpResponse)
 {
     private ResponseValue<Stream>? _stream;
@@ -14,8 +13,5 @@ public class TestStreamResponse(HttpResponseMessage httpResponse) : TestResponse
 
     internal override bool CanHandleContent() => ContentType is not null && HttpResponse.Content is StreamContent;
 
-    protected override string GetInfoString() => $"""
-        {TestResponseFormatter.FormatStatusCodeInfo(this)}
-        Response: {ContentType} stream {AsStream.Length} bytes long
-        """;
+    protected override string GetInfoString() => TestStreamResponseFormatter.Format(this);
 }
