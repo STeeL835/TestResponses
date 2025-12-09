@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using TestResponses.Features;
 
-namespace TestResponses.Tests.Tests.Components;
+namespace TestResponses.Tests.Tests.Features.StatusCode;
 
 public class UniStatusCodeTests
 {
