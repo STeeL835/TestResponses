@@ -1,5 +1,4 @@
-﻿using TestResponses.Features;
-using TestResponses.Json;
+﻿using TestResponses.Json;
 using TestResponses.Streams;
 using TestResponses.Text;
 

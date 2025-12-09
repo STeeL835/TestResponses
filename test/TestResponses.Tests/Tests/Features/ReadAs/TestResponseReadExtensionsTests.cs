@@ -1,6 +1,5 @@
 ﻿using System.Net.Mime;
 using RichardSzalay.MockHttp;
-using TestResponses.Features;
 using TestResponses.Tests.Utilities;
 using TestResponses.Text;
 

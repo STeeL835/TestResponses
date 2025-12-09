@@ -1,6 +1,4 @@
-﻿using TestResponses.Features;
-
-namespace TestResponses.Files;
+﻿namespace TestResponses.Files;
 
 public static class TestFileResponseExtensions
 {

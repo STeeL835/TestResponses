@@ -1,5 +1,4 @@
 ﻿using TestResponses.Empty;
-using TestResponses.Features;
 using TestResponses.Files;
 using TestResponses.Json;
 using TestResponses.Streams;

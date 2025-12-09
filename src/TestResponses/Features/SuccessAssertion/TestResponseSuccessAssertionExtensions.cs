@@ -1,7 +1,6 @@
-﻿using TestResponses.Empty;
-using TestResponses.Streams;
+﻿using TestResponses.Streams;
 
-namespace TestResponses.Features;
+namespace TestResponses;
 
 public static class TestResponseSuccessAssertionExtensions
 {
@@ -9,8 +8,6 @@ public static class TestResponseSuccessAssertionExtensions
     // - test result shouldn't have more that one main value
     // - attribute not inherited
     // - generic interfaces won't work - they will be inherited, ambiguous for compiler
-    // TODO: move tests from string to own file
-    // TODO: check in tests no expected, expected and overriden with argument 
     public static async Task<TResponseValue> AssertSucceededAndReturn<TTestResponse, TResponseValue>(
         this Task<TTestResponse> responseTask,
         Func<TTestResponse, TResponseValue> valueSelector, 

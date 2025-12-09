@@ -2,7 +2,6 @@
 using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using RichardSzalay.MockHttp;
-using TestResponses.Features;
 using TestResponses.Json;
 using TestResponses.Tests.Dto;
 using TestResponses.Tests.Utilities;

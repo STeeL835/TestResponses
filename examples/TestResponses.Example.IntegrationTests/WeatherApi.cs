@@ -1,5 +1,4 @@
 ﻿using TestResponses.Empty;
-using TestResponses.Features;
 using TestResponses.Json;
 
 namespace TestResponses.Example.IntegrationTests;

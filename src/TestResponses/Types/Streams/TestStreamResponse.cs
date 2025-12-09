@@ -1,6 +1,4 @@
-﻿using TestResponses.Features;
-
-namespace TestResponses.Streams;
+﻿namespace TestResponses.Streams;
 
 // TODO: test response
 public class TestStreamResponse(HttpResponseMessage httpResponse) : TestResponse(httpResponse)

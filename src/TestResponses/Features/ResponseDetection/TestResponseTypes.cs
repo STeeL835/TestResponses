@@ -5,7 +5,7 @@ using TestResponses.Json;
 using TestResponses.Streams;
 using TestResponses.Text;
 
-namespace TestResponses.Features;
+namespace TestResponses;
 
 internal class TestResponseTypes
 {

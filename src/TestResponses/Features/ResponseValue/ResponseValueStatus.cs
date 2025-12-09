@@ -1,3 +1,3 @@
-﻿namespace TestResponses.Features;
+﻿namespace TestResponses;
 
 public enum ResponseValueStatus { NotRead, ReadSuccessfully, ReadWithException }

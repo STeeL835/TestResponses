@@ -1,4 +1,4 @@
-﻿namespace TestResponses.Features;
+﻿namespace TestResponses;
 
 public class ResponseValue<T>
 {

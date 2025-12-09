@@ -2,7 +2,6 @@
 using System.Net.Mime;
 using RichardSzalay.MockHttp;
 using TestResponses.Empty;
-using TestResponses.Features;
 using TestResponses.Json;
 using TestResponses.Streams;
 using TestResponses.Tests.Utilities;

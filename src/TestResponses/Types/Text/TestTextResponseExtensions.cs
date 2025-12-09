@@ -1,6 +1,4 @@
-﻿using TestResponses.Features;
-
-namespace TestResponses.Text;
+﻿namespace TestResponses.Text;
 
 public static class TestTextResponseExtensions
 {

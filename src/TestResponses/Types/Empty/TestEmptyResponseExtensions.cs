@@ -1,6 +1,4 @@
-﻿using TestResponses.Features;
-
-namespace TestResponses.Empty;
+﻿namespace TestResponses.Empty;
 
 public static class TestEmptyResponseExtensions
 {

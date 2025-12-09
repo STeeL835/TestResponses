@@ -1,6 +1,4 @@
-﻿using TestResponses.Features;
-
-namespace TestResponses.Streams;
+﻿namespace TestResponses.Streams;
 
 public static class TestStreamResponseExtensions
 {

@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace TestResponses.Features;
+namespace TestResponses;
 
 public record UniStatusCode
 {

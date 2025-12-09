@@ -1,6 +1,4 @@
-﻿using TestResponses.Features;
-
-namespace TestResponses.Json;
+﻿namespace TestResponses.Json;
 
 public static class TestJsonResponseExtensions 
 {

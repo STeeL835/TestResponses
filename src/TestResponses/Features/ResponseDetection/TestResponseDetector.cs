@@ -1,6 +1,6 @@
 ﻿using TestResponses.Unknown;
 
-namespace TestResponses.Features;
+namespace TestResponses;
 
 internal static class TestResponseDetector
 {

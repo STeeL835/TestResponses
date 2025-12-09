@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using TestResponses.Features;
 
 namespace TestResponses.Tests.Tests.Features.StatusCode;
 
