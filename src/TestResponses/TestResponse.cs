@@ -18,7 +18,7 @@ public abstract class TestResponse(HttpResponseMessage httpResponse)
     
     public async Task Read()
     {
-        if (IsRead) return; // TODO: Test it's not read twice (with custom testResponse) that throws exception if read twice
+        if (IsRead) return;
         
         // to be able to read http response twice (when response structure fits different class)
         await HttpResponse.Content.LoadIntoBufferAsync();

@@ -1,8 +1,18 @@
 ﻿using TestResponses.Features;
 using TestResponses.Json;
+using TestResponses.Streams;
 using TestResponses.Text;
 
 namespace TestResponses.Tests.Utilities;
+
+class NonIdenpotentReadResponse(HttpResponseMessage httpMessage) : TestStreamResponse(httpMessage)
+{
+    protected override async Task ReadResponse()
+    {
+        if (IsRead) throw new Exception("Reading twice!");
+        await base.ReadResponse();
+    }
+}
 
 class InvalidCtorResponse(HttpResponseMessage httpMessage, string text) : TestTextResponse(httpMessage);
 
