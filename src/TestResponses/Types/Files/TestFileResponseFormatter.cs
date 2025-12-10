@@ -6,9 +6,20 @@ public static class TestFileResponseFormatter
     {
         return $"""
             {TestResponseFormatter.FormatStatusCodeInfo(response)}
-            File name: {response.AsFile.Name} 
-            File size: {FormatFileSize(response.AsFile.SizeBytes)} ({response.AsFile.SizeBytes} bytes)
+            {FormatResponseAsFile(response)}
             """;
+    }
+
+    public static string FormatResponseAsFile(TestFileResponse response)
+    {
+        return response switch
+            {
+                { IsRead: false } => "Response: *not read*",
+                _ => $"""
+                File name: {response.AsFile.Name}
+                File size: {FormatFileSize(response.AsFile.SizeBytes)} ({response.AsFile.SizeBytes} bytes)
+                """
+            };
     }
 
     public static string FormatFileSize(long bytes)
@@ -23,6 +34,6 @@ public static class TestFileResponseFormatter
             postfixIndex++;
         }
 
-        return $"{size:F2}{postfixes[postfixIndex]}";
+        return $"{size:#0.##}{postfixes[postfixIndex]}";
     }
 }
