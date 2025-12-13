@@ -176,6 +176,31 @@ public class TestJsonResponseTests
         explicitResponse.Should().BeEquivalentTo(expectedDetails);
     }
 
+    [Fact]
+    public async Task AsDto_ResponseIsRead_WithoutType_ShouldDeserializeIntoNeededType()
+    {
+        const string json = """{ "type": "NotFound", "title": "Not found", "status": 404, "detail": "City 'Pokrovsk' not found, maybe you meant 'Engels'" }""";
+        var expectedDetails = new ProblemDetails()
+        {
+            Type = "NotFound",
+            Status = 404,
+            Title = "Not found",
+            Detail = "City 'Pokrovsk' not found, maybe you meant 'Engels'",
+        };
+
+        var httpResponse = await Receive(json, HttpStatusCode.NotFound);
+
+        var testResponse = new TestJsonResponse(httpResponse);
+        await testResponse.Read();
+
+        testResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        testResponse.IsRead.Should().BeTrue();
+        testResponse.AsText.Should().Be(json);
+
+        var explicitResponse = testResponse.As<ProblemDetails>();
+        explicitResponse.Should().BeEquivalentTo(expectedDetails);
+    }
+
     #endregion
     
     #region ToString

@@ -5,7 +5,7 @@ namespace TestResponses.Json;
 
 public static class TestJsonResponseFormatter
 {
-    public static string Format<T>(TestJsonResponse<T> response)
+    public static string Format(TestJsonResponse response)
     {
         return $"""
             {TestResponseFormatter.FormatStatusCodeInfo(response)}
@@ -13,7 +13,7 @@ public static class TestJsonResponseFormatter
             """;
     }
 
-    public static string FormatResponseAsJson<T>(TestJsonResponse<T> response)
+    public static string FormatResponseAsJson(TestJsonResponse response)
     {
         return $"""
             Response:
@@ -21,24 +21,25 @@ public static class TestJsonResponseFormatter
             {
                 { IsRead: false } => "*not read*",
                 { AsText.Length: 0 } => "*empty*",
-                _ => TryFormatAsJson(response.AsText)
+                _ => TryFormatAsJson(response.AsText, response.JsonConfig.SerializerOptions)
             }}
             """;
     }
-    
-    public static string TryFormatAsJson(string json)
+
+    public static string TryFormatAsJson(string json, JsonSerializerOptions? serializerOptions = null)
     {
+        serializerOptions ??= TestJsonResponse.GlobalJsonConfig.SerializerOptions;
         try
         {
             var jObj = JsonNode.Parse(json, documentOptions: new JsonDocumentOptions()
             {
-                AllowTrailingCommas = TestJsonResponseOptions.SerializerOptions.AllowTrailingCommas,
-                CommentHandling = TestJsonResponseOptions.SerializerOptions.ReadCommentHandling,
+                AllowTrailingCommas = serializerOptions.AllowTrailingCommas,
+                CommentHandling = serializerOptions.ReadCommentHandling,
             });
 
             if (jObj is null) return json;
 
-            var indentedJson = jObj.ToJsonString(TestJsonResponseOptions.SerializerOptions);
+            var indentedJson = jObj.ToJsonString(serializerOptions);
             return indentedJson;
         }
         catch (JsonException)

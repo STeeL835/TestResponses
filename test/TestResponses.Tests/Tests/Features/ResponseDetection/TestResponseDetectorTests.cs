@@ -43,7 +43,7 @@ public class TestResponseDetectorTests
 
         var bestfit = await TestResponseDetector.ReadAsBestFitResponse(httpResponse);
         
-        bestfit.Should().BeOfType<TestJsonResponse<object>>()
+        bestfit.Should().BeOfType<TestJsonResponse>()
             .Which.AsText.Should().Be("""[{ "key": "value" }]""");
     }
     

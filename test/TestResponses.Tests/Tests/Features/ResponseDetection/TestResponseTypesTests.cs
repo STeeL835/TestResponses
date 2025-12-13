@@ -17,7 +17,7 @@ public class TestResponseTypesTests
 
         detector.List.Should().ContainInOrder([
             typeof(JsonPatchResponse),
-            typeof(TestJsonResponse<>),
+            typeof(TestJsonResponse),
             typeof(TestTextResponse),
             typeof(TestStreamResponse),
         ], "types must be sorted from most specific to least");
@@ -33,7 +33,7 @@ public class TestResponseTypesTests
             typeof(TestEmptyResponse),
             typeof(TestStreamResponse),
             typeof(TestFileResponse),
-            typeof(TestJsonResponse<>),
+            typeof(TestJsonResponse),
             typeof(TestTextResponse),
             typeof(JsonPatchResponse),
             typeof(MarkdownResponse),

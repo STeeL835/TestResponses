@@ -14,7 +14,7 @@ internal class TestResponseTypes
     private List<Type> _registeredTypes = new()
     {
         typeof(TestEmptyResponse),
-        typeof(TestJsonResponse<>),
+        typeof(TestJsonResponse),
         typeof(TestTextResponse),
         typeof(TestFileResponse),
         typeof(TestStreamResponse),
