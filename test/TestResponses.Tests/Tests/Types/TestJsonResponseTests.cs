@@ -114,7 +114,8 @@ public class TestJsonResponseTests
     [Theory]
     [InlineData("""[{ "City": "Saratov", "Date": "2025-09-11", "TemperatureC": 6 }]""")] // array
     [InlineData("""{ "Town": "Saratov", "Date": "2025-09-11", "TemperatureC": 6 }""")] // unknown property
-    [InlineData("""{ "City": "Saratov", "TemperatureC": 6 }""")] // missing non-null property
+    [InlineData("""{ "City": "Saratov", "TemperatureC": 6 }""")] // missing non-null struct property
+    [InlineData("""{ "City": null, "Date": "2025-09-11", "TemperatureC": 6 }""")] // missing reference property without `?`
     public async Task AsDto_ResponseNotDeserialized_ShouldThrowException(string json)
     {
         var httpResponse = await Receive(json);

@@ -40,14 +40,14 @@ internal class TestResponseTypes
             typesToRegister.AddRange(assemblyTypes);
         }
         
-        Register(typesToRegister);
+        Register(typesToRegister.ToArray());
     }
 
     /// <summary> Registers TestResponse type for best-fit response detection (to provide correct response info) </summary>
     public void Register<T>() where T : TestResponse => Register(typeof(T));
     
     /// <summary> Registers TestResponse type for best-fit response detection (to provide correct response info) </summary>
-    public void Register(params IEnumerable<Type> types)
+    public void Register(params Type[] types)
     {
         foreach (var type in types)
         {
