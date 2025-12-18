@@ -1,7 +1,7 @@
-TestResponse
-============
+TestResponses
+=============
 
-A family of HttpResponseMessage decorators that make testing easier and more informative
+A family of HttpResponseMessage decorators that make testing APIs easier and more informative
 
 ## Overview
 It turns this test fail message
@@ -40,14 +40,15 @@ dto!.City.Should().Be("Saratov");
 ```
 
 #### Supports several response types out-of-box:
-- Empty
-- Stream
-  - Text
-    - Json
-  - File
+- [Empty](./src/TestResponses/Types/Empty)
+- [Stream](./src/TestResponses/Types/Streams)
+  - [Text](./src/TestResponses/Types/Text)
+    - [Json](./src/TestResponses/Types/Json)
+      - [Json\<T\>](./src/TestResponses/Types/Json)
+  - [File](./src/TestResponses/Types/Files)
   - _...or write your own_
 
-#### Can also help with
+#### Helps with
 - showing formatted info if response type is different\
   expected empty 204, but got 400 with error model
 
@@ -70,11 +71,52 @@ dto!.City.Should().Be("Saratov");
 
 - accessing original HttpResponseMessage
 
-## How to use
+## Get started
+
+#### 1. Install
+Install it from nuget package manager, or with CLI:
+```
+dotnet add package TestResponses
+```
+   
+#### 2. Instantiate
+
+Wrap HttpResponse message so that your api method returns expected TestResponse type:
+
+```csharp
+public Task<TestJsonResponse<WeatherForecast>> GetTodayWeather(string city)
+{
+    return httpClient
+        .GetAsync($"forecasts?city={city}&date=today")
+        .ReadAs<TestJsonResponse<WeatherForecast>>(200); 
+}
+```
+
+Here we
+- use convenience extension method `ReadAs` that allows to create TestResponse without awaiting HttpResponseMessage. This also allows us to drop `async` keyword and just return task.
+- use `TestJsonResponse<WeatherForecast>` type because our API returns JSON for specific model, but if your API returns different type of data - you can use a different type (for example `TestEmptyResponse` if API is expected to return nothing because of 204 NoContent)
+- provide an expected status code for an API. Here we expect that "happy path" status is 200, but it can be 201, 204 or any other status code (not limited to 2xx).
+
+TestResponse can be used however you like (and this is not the only way to create TestResponse object), but it works best with "test client" approach, where tested app is accessed through a client made for tests (which provides test authentication, translates parameters into a request, and _returns a set-up test response that not only deserializes to a certain model, but also helps tests check different conditions_). Set up once, and reused in every  needed place.
+
+#### 3. Use
+
+Call your created API method
+
+```csharp
+[Fact] 
+public async Task GetTodayWeather_CityExists_ShouldReturnForecast()
+{
+    var response = await _weatherApi.GetTodayWeather("Saratov");
+        
+    response.AsDto!.City.Should().Be("Saratov");
+}
+```
+This way test will pass if response is deserialized and city satisfies the condition, and will fail if response can't be deserialized (often 400 and 500 responses have different schema).
+
+For more complex scenarios, check an [examples project](./examples/TestResponses.Example.IntegrationTests) that shows how test responses can be [created](./examples/TestResponses.Example.IntegrationTests/WeatherApi.cs) and [used](./examples/TestResponses.Example.IntegrationTests/WeatherApiTestsTestResponse.cs)
 
 TODO: write docs
-
-but there is an [examples project](./examples/TestResponses.Example.IntegrationTests) that shows how test responses can be [created](./examples/TestResponses.Example.IntegrationTests/WeatherApi.cs) and [used](./examples/TestResponses.Example.IntegrationTests/WeatherApiTestsTestResponse.cs)
 
 ## How to create a new response type
 

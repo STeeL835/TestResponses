@@ -7,7 +7,7 @@
     <PackageId>TestResponses</PackageId> 
     <Version>0.1.0</Version>
     <Authors>Dmitrii Frolov</Authors>
-    <Description>A family of HttpResponseMessage decorators that make testing easier and more informative</Description>
+    <Description>A family of HttpResponseMessage decorators that make testing APIs easier and more informative</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/steel835/TestResponses</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
