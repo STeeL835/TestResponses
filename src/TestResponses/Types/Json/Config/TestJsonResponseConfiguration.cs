@@ -8,7 +8,7 @@ public class TestJsonResponseConfiguration
 {
     public static TestJsonResponseConfiguration Default => new()
     {
-        SerializerOptions = new (JsonSerializerDefaults.Web)
+        Serializer = new TestJsonResponseSystemTextSerializer(new (JsonSerializerDefaults.Web)
         {
             AllowTrailingCommas = true,
             ReadCommentHandling = JsonCommentHandling.Skip,
@@ -19,8 +19,8 @@ public class TestJsonResponseConfiguration
 #endif
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, // to show non-latin characters unencoded
             WriteIndented = true,
-        }
+        })
     };
 
-    public required JsonSerializerOptions SerializerOptions { get; init; }
+    public required ITestJsonResponseSerializer Serializer { get; init; }
 }

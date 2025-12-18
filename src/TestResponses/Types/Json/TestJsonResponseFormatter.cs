@@ -1,7 +1,4 @@
-﻿using System.Text.Json;
-using System.Text.Json.Nodes;
-
-namespace TestResponses.Json;
+﻿namespace TestResponses.Json;
 
 public static class TestJsonResponseFormatter
 {
@@ -21,30 +18,17 @@ public static class TestJsonResponseFormatter
             {
                 { IsRead: false } => "*not read*",
                 { AsText.Length: 0 } => "*empty*",
-                _ => TryFormatAsJson(response.AsText, response.JsonConfig.SerializerOptions)
+                _ => TryFormatAsJson(response.AsText, response.JsonConfig.Serializer)
             }}
             """;
     }
 
-    public static string TryFormatAsJson(string json, JsonSerializerOptions? serializerOptions = null)
+    public static string TryFormatAsJson(string json, ITestJsonResponseSerializer? serializer = null)
     {
-        serializerOptions ??= TestJsonResponse.GlobalJsonConfig.SerializerOptions;
-        try
-        {
-            var jObj = JsonNode.Parse(json, documentOptions: new JsonDocumentOptions()
-            {
-                AllowTrailingCommas = serializerOptions.AllowTrailingCommas,
-                CommentHandling = serializerOptions.ReadCommentHandling,
-            });
+        serializer ??= TestJsonResponse.GlobalJsonConfig.Serializer;
+        
+        serializer.TryIndent(json, out var indentedJson);
 
-            if (jObj is null) return json;
-
-            var indentedJson = jObj.ToJsonString(serializerOptions);
-            return indentedJson;
-        }
-        catch (JsonException)
-        {
-            return json;
-        }
+        return indentedJson;
     }
 }

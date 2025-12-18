@@ -318,7 +318,48 @@ public class TestJsonResponseTests
     }
 
     #endregion
+
+    #region Configuration
+
+    [Fact]
+    public async Task Config_ReplacedSerializer_ShouldUseProvideSerializer()
+    {
+        const string json = """{ "City": "Saratov", "Date": "2025-09-11", "TemperatureC": 6 }""";
+
+        var httpResponse = await Receive(json);
+
+        var testResponse = new TestJsonResponse<int>(httpResponse)
+        {
+            JsonConfig = new()
+            {
+                Serializer = new FaketonsoftJsonSerializer()
+            }
+        };
+        await testResponse.Read();
+
+        testResponse.AsDto.Should().Be(FaketonsoftJsonSerializer.DeserializedInt);
+        testResponse.ToString().Should().Contain(FaketonsoftJsonSerializer.IndentedJson);
+    }
     
+    public class FaketonsoftJsonSerializer : ITestJsonResponseSerializer
+    {
+        public const int DeserializedInt = 42;
+        public const string IndentedJson = "imagine this is indented json";
+
+        public T? Deserialize<T>(string json)
+        {
+            if (typeof(T) == typeof(int)) return (T)(object)DeserializedInt;
+            throw new NotImplementedException();
+        }
+
+        public bool TryIndent(string possibleJson, out string possiblyIndentedJson)
+        {
+            possiblyIndentedJson = IndentedJson;
+            return true;
+        }
+    }
+
+    #endregion
     
     
     private Task<HttpResponseMessage> Receive(string content, HttpStatusCode statusCode = HttpStatusCode.OK)
