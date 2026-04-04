@@ -5,7 +5,7 @@ namespace TestResponses.Json;
 
 public class TestJsonResponseSystemTextSerializer(JsonSerializerOptions options) : ITestJsonResponseSerializer
 {
-    public JsonSerializerOptions Options { get; set; } = options;
+    public JsonSerializerOptions Options { get; } = options;
 
     public T? Deserialize<T>(string json) => JsonSerializer.Deserialize<T>(json, Options);
     
