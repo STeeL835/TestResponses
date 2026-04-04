@@ -2,6 +2,10 @@
 
 namespace TestResponses.Text;
 
+/// <summary>
+/// Response type for text-based content, including plain text, XML, and JSON.
+/// Exposes the response content as a string through <see cref="AsText" />.
+/// </summary>
 public class TestTextResponse(HttpResponseMessage httpResponse) : TestStreamResponse(httpResponse)
 {
     private ResponseValue<string>? _text;

@@ -1,6 +1,9 @@
 ﻿namespace TestResponses.Unknown;
 
-// TODO: there are stream and empty response types, maybe this no longer needed
+/// <summary>
+/// Fallback response type for unknown or unsupported content types.
+/// Always reports the response as unknown and does not attempt a typed read.
+/// </summary>
 public class TestUnknownResponse(HttpResponseMessage httpResponse) : TestResponse(httpResponse)
 {
     internal override bool CanHandleContent() => true;

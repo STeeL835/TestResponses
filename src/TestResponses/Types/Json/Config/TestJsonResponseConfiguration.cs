@@ -4,8 +4,14 @@ using System.Text.Json.Serialization;
 
 namespace TestResponses.Json;
 
+/// <summary>
+/// Configuration for <see cref="TestJsonResponse"/> instances.
+/// </summary>
 public class TestJsonResponseConfiguration
 {
+    /// <summary>
+    /// Default configuration instance. Can be used to reset configuration.
+    /// </summary>
     public static TestJsonResponseConfiguration Default => new()
     {
         Serializer = new TestJsonResponseSystemTextSerializer(new (JsonSerializerDefaults.Web)
