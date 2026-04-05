@@ -10,5 +10,4 @@ public static class TestResponseFormatter
     }
     public static string FormatStatusCodeInfo(TestResponse response) =>
         $"Status code: {(int)response.StatusCode} ({response.HttpResponse.ReasonPhrase})";
-
 }

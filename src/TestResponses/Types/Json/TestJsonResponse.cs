@@ -18,6 +18,7 @@ public class TestJsonResponse(HttpResponseMessage httpResponse) : TestTextRespon
     /// </summary>
     public TestJsonResponseConfiguration JsonConfig { get; init; } = GlobalJsonConfig;
 
+    
     /// <summary>
     /// Deserializes the JSON response content into the requested type.
     /// </summary>
@@ -27,5 +28,5 @@ public class TestJsonResponse(HttpResponseMessage httpResponse) : TestTextRespon
     
     internal override bool CanHandleContent() => ContentType is not null && ContentType.Contains("json");
     
-    protected override string GetInfoString() => TestJsonResponseFormatter.Format(this);
+    protected override string GetInfoString() => JsonConfig.Formatter.Format(this);
 }

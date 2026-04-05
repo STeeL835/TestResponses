@@ -180,6 +180,26 @@ public class TestFileResponseTests
 
     #endregion
     
+    #region Configuration
+
+    [Fact]
+    public async Task Config_ReplacedFormatter_ShouldUseProvidedFormatter()
+    {
+        var httpResponse = await Receive("info.txt", [4, 8, 15, 16, 23, 42]);
+
+        var testResponse = new TestFileResponse(httpResponse)
+        {
+            FileConfig = new()
+            {
+                Formatter = new TestResponseDelegateFormatter<TestFileResponse>(r => "format")
+            }
+        };
+        await testResponse.Read();
+
+        testResponse.ToString().Should().Be("format");
+    }
+    
+    #endregion
     
     
     private Task<HttpResponseMessage> Receive(string? fileName, byte[] fileContent,

@@ -110,7 +110,27 @@ public class TestStreamResponseTests
 
     #endregion
     
+    #region Configuration
+
+    [Fact]
+    public async Task Config_ReplacedFormatter_ShouldUseProvidedFormatter()
+    {
+        var httpResponse = await Receive([4, 8, 15, 16, 23, 42]);
+        
+        var testResponse = new TestStreamResponse(httpResponse)
+        {
+            StreamConfig = new()
+            {
+                Formatter = new TestResponseDelegateFormatter<TestStreamResponse>(_ => "format")
+            }
+        };
+        await testResponse.Read();
+
+        testResponse.ToString().Should().Be("format");
+    }
     
+    #endregion
+
     
     private Task<HttpResponseMessage> Receive(byte[] content, HttpStatusCode statusCode = HttpStatusCode.OK)
     {

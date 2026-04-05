@@ -8,12 +8,24 @@ namespace TestResponses.Files;
 /// </summary>
 public class TestFileResponse(HttpResponseMessage httpResponse) : TestStreamResponse(httpResponse)
 {
+    /// <summary>
+    /// Global configuration applied to all <see cref="TestFileResponse"/> instances by default.
+    /// </summary>
+    public static TestFileResponseConfiguration GlobalFileConfig = TestFileResponseConfiguration.Default;
+
+    /// <summary>
+    /// Instance-level configuration for <see cref="TestFileResponse"/>
+    /// </summary>
+    public TestFileResponseConfiguration FileConfig { get; init; } = GlobalFileConfig;
+
+    
     private ResponseValue<ResponseFile>? _file;
     
     /// <summary>
     /// The downloaded file payload for attachment responses.
     /// </summary>
     public ResponseFile AsFile => _file.GetOrThrow()!;
+    
     
     /// <summary>
     /// The file name from the response content disposition, if available.
@@ -32,5 +44,5 @@ public class TestFileResponse(HttpResponseMessage httpResponse) : TestStreamResp
     internal override bool CanHandleContent() => ContentType is not null 
                                                  && HttpResponse.Content.Headers.ContentDisposition?.DispositionType is "attachment";
 
-    protected override string GetInfoString() => TestFileResponseFormatter.Format(this);
+    protected override string GetInfoString() => FileConfig.Formatter.Format(this);
 }

@@ -13,6 +13,7 @@ public class TestJsonResponse<TDto>(HttpResponseMessage httpResponse) : TestJson
     /// </summary>
     public TDto? AsDto => _json.GetOrThrow();
 
+    
     protected override async Task ReadResponse()
     {
         await base.ReadResponse();

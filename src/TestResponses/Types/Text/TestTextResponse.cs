@@ -8,6 +8,17 @@ namespace TestResponses.Text;
 /// </summary>
 public class TestTextResponse(HttpResponseMessage httpResponse) : TestStreamResponse(httpResponse)
 {
+    /// <summary>
+    /// Global configuration applied to all <see cref="TestTextResponse"/> instances by default.
+    /// </summary>
+    public static TestTextResponseConfiguration GlobalTextConfig = TestTextResponseConfiguration.Default;
+
+    /// <summary>
+    /// Instance-level configuration for <see cref="TestTextResponse"/>
+    /// </summary>
+    public TestTextResponseConfiguration TextConfig { get; init; } = GlobalTextConfig;
+
+    
     private ResponseValue<string>? _text;
 
     /// <summary>
@@ -17,6 +28,7 @@ public class TestTextResponse(HttpResponseMessage httpResponse) : TestStreamResp
     /// </summary>
     public string AsText => _text.GetOrThrow()!;
 
+    
     protected override async Task ReadResponse()
     {
         await base.ReadResponse();
@@ -29,5 +41,5 @@ public class TestTextResponse(HttpResponseMessage httpResponse) : TestStreamResp
                (ContentType.StartsWith("text/") || ContentType.Contains("json") || ContentType.Contains("xml"));
     }
 
-    protected override string GetInfoString() => TestTextResponseFormatter.Format(this);
+    protected override string GetInfoString() => TextConfig.Formatter.Format(this);
 }

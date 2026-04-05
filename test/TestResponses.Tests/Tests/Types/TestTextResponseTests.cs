@@ -112,6 +112,26 @@ public class TestTextResponseTests
 
     #endregion
     
+    #region Configuration
+
+    [Fact]
+    public async Task Config_ReplacedFormatter_ShouldUseProvidedFormatter()
+    {
+        var httpResponse = await Receive("Lorem ipsum dolor sit amet");
+        
+        var testResponse = new TestTextResponse(httpResponse)
+        {
+            TextConfig = new()
+            {
+                Formatter = new TestResponseDelegateFormatter<TestTextResponse>(r => "format")
+            }
+        };
+        await testResponse.Read();
+
+        testResponse.ToString().Should().Be("format");
+    }
+    
+    #endregion
     
     
     private Task<HttpResponseMessage> Receive(string content, HttpStatusCode statusCode = HttpStatusCode.OK)
