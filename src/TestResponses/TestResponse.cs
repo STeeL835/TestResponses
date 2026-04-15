@@ -68,7 +68,7 @@ public abstract class TestResponse(HttpResponseMessage httpResponse)
     /// <exception cref="TestResponseAssertionException">Thrown if the response does not match the expected status code, content type, or schema.</exception>
     public void AssertValid(UniStatusCode? withStatusCode = null)
     {
-        if (!IsRead) ThrowAssertionException("Can't assert validity because response is not read");
+        if (!IsRead) throw new TestResponseAssertionException(this, "Can't assert validity because response is not read");
         
         if (withStatusCode is not null) AssertStatusCode(withStatusCode);
         else if (ExpectedStatusCode is not null) AssertExpectedStatusCode();
@@ -103,7 +103,7 @@ public abstract class TestResponse(HttpResponseMessage httpResponse)
     {
         if (!expectedStatusCode.IsMatch(StatusCode))
         {
-            ThrowAssertionException(expectedStatusCode.IsSingleValue 
+            throw new TestResponseAssertionException(this, expectedStatusCode.IsSingleValue 
                 ? $"Response status code is not {expectedStatusCode}"
                 : $"Response status code is not in range {expectedStatusCode}");
         }
@@ -112,7 +112,7 @@ public abstract class TestResponse(HttpResponseMessage httpResponse)
     private void AssertExpectedContentType()
     {
         if (BestFitResponse is not null) 
-            ThrowAssertionException($"{GetType().Name} didn't expect content-type '{HttpResponse.Content.Headers.ContentType}'");
+            throw new TestResponseAssertionException(this, $"{GetType().Name} didn't expect content-type '{HttpResponse.Content.Headers.ContentType}'");
     }
 
     protected virtual void AssertResponseSchema() { /* assume response has no schema by default */ }
@@ -120,7 +120,7 @@ public abstract class TestResponse(HttpResponseMessage httpResponse)
     [DoesNotReturn]
     private void ThrowAssertionException(string message, Exception? innerException = null)
     {
-        throw new TestResponseAssertionException($"{message}\n{ToString()}", innerException);
+        throw new TestResponseAssertionException(this, message, innerException);
     }
     
     #endregion

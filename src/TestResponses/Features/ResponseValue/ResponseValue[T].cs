@@ -50,10 +50,7 @@ public class ResponseValue<T>
                 throw new TestResponseException($"Response value is not read. Probably test response didn't read into a container");
 
             case ResponseValueStatus.ReadWithException:
-                throw new TestResponseAssertionException($"""
-                    Response could not be read as {typeof(T).Name} (see inner exception)
-                    {_testResponse}
-                    """, _caughtException);
+                throw new TestResponseAssertionException(_testResponse, $"Response could not be read as {typeof(T).Name} (see inner exception)", _caughtException);
 
             case ResponseValueStatus.ReadSuccessfully:
                 return _value;
