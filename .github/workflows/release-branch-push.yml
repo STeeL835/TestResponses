@@ -64,13 +64,16 @@ jobs:
     - name: Get desired version
       run: |
         VERSION=$(grep -oP '<PackageUnifiedVersion>\K[^<]+' Directory.Build.props)
+        echo "Desired version: $VERSION"
         echo "DESIRED_VERSION=$VERSION" >> $GITHUB_ENV
     
     - name: Get published versions
       run: |
         VERSIONS=$(curl -s "$NUGET_SERVER/v3-flatcontainer/testresponses/index.json" | jq -r '.versions[]')
+        echo "Existing versions: \n$VERSIONS"
         echo "EXISTING_VERSIONS=$VERSIONS" >> $GITHUB_ENV
     
     - name: Validate version
-      run: echo ${{ env.DESIRED_VERSION }}
+      run: | 
+        echo ${{ env.DESIRED_VERSION }}
         
