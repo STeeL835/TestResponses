@@ -1,10 +1,11 @@
-﻿using TestResponses.Json;
+﻿using System.Diagnostics.CodeAnalysis;
+using TestResponses.Json;
 using TestResponses.Streams;
 using TestResponses.Text;
 
 namespace TestResponses.Tests.Utilities;
 
-class NonIdenpotentReadResponse(HttpResponseMessage httpMessage) : TestStreamResponse(httpMessage)
+class NonIdempotentReadResponse(HttpResponseMessage httpMessage) : TestStreamResponse(httpMessage)
 {
     protected override async Task ReadResponse()
     {
@@ -13,7 +14,9 @@ class NonIdenpotentReadResponse(HttpResponseMessage httpMessage) : TestStreamRes
     }
 }
 
+#pragma warning disable CS9113 // Parameter is unread. (It's needed to test the instantiation)
 class InvalidCtorResponse(HttpResponseMessage httpMessage, string text) : TestTextResponse(httpMessage);
+#pragma warning restore CS9113 // Parameter is unread.
 
 class JsonPatchResponse(HttpResponseMessage httpMessage) : TestJsonResponse<object>(httpMessage);
 
@@ -21,7 +24,7 @@ class MarkdownResponse(HttpResponseMessage httpMessage) : TestTextResponse(httpM
 
 abstract class HeaderContentResponse(HttpResponseMessage httpMessage, string headerName) : TestResponse(httpMessage)
 {
-    private ResponseValue<string>? _value;
+    private ResponseValue<string?>? _value;
     public string Value => _value.GetOrThrow()!;
 
     internal override bool CanHandleContent() => HttpResponse.Headers.Contains(headerName);

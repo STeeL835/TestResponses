@@ -13,7 +13,7 @@ public class TestResponseTests
         var httpResponse = await TestHttpClient.ReceiveResponse(r =>
             r.Respond(MediaTypeNames.Application.Octet, new MemoryStream()));
 
-        var testResponse = new NonIdenpotentReadResponse(httpResponse);
+        var testResponse = new NonIdempotentReadResponse(httpResponse);
         
         await testResponse.Read();
         await testResponse.Read();
