@@ -58,4 +58,4 @@ jobs:
       run: dotnet test --no-build --filter 'FullyQualifiedName!~.Examples.' --list-tests
 
     - name: Test
-      run: dotnet test --no-build --filter 'FullyQualifiedName!~.Examples.'
+      run: dotnet test  --filter 'FullyQualifiedName!~.Examples.'
