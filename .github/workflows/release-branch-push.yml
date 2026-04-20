@@ -54,8 +54,8 @@ jobs:
       with:
         name: test-responses-build-${{ github.sha }}
         
-    - name: Show tests
-      run: dotnet test --no-build --filter 'FullyQualifiedName!~.Examples.' --list-tests
+    - name: Restore
+      run: dotnet restore TestResponses.slnx
 
     - name: Test
-      run: dotnet test  --filter 'FullyQualifiedName!~.Examples.'
+      run: dotnet test --no-build --filter 'FullyQualifiedName!~.Example.'
