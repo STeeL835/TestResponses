@@ -76,7 +76,7 @@ jobs:
     
     - name: Pick a version to release
       run: | 
-        SEMVER_REGEX="^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-#]+)?$"
+        SEMVER_REGEX="^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.#-]+)?$"
         if [[ ! "$DESIRED_VERSION" =~ $SEMVER_REGEX ]]; then
           echo "Error: DESIRED_VERSION ($DESIRED_VERSION) is not a valid format."
           exit 1
