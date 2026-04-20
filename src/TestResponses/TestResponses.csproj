@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks> <!-- do not forget to update workflow versions-->
     <TargetFramework></TargetFramework> <!-- reset build props -->
 
     <PackageId>TestResponses</PackageId> 
-    <Version>0.1.0</Version>
+    <Version>$(PackageUnifiedVersion)</Version>
     <Authors>Dmitrii Frolov</Authors>
     <Description>A family of HttpResponseMessage decorators that make testing APIs easier and more informative</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

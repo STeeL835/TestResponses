@@ -4,8 +4,14 @@ on:
   pull_request:
     branches: [ "main", "release/**" ]
 
+env:
+  NUGET_SERVER: https://api.nuget.org
+  # NUGET_SERVER: https://nugettest.org
+
+
 jobs:
-  build:
+  test:
+    name: Build and Test
     runs-on: ubuntu-latest
 
     steps:
@@ -24,19 +30,16 @@ jobs:
       run: dotnet restore TestResponses.slnx
 
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build -c Release --no-restore
 
-    - name: Save build artifacts
-      uses: actions/upload-artifact@v7
-      with:
-        name: test-responses-build-${{ github.sha }}
-        path: |
-          ./**/bin/**
-          ./**/obj/**
+    - name: Test
+      run: dotnet test -c Release --no-build --filter 'FullyQualifiedName!~.Example.'
 
-  test: 
+  pack: 
+    name: Pack packages
     runs-on: ubuntu-latest
-    needs: build
+    needs: test
+
     steps:
         
     - name: Checkout 
@@ -48,14 +51,26 @@ jobs:
         dotnet-version: |
           8.0.x
           9.0.x
-    
-    - name: Restore build artifacts
-      uses: actions/download-artifact@v8
-      with:
-        name: test-responses-build-${{ github.sha }}
         
     - name: Restore
       run: dotnet restore TestResponses.slnx
 
-    - name: Test
-      run: dotnet test --no-build --filter 'FullyQualifiedName!~.Example.'
+    - name: Build
+      run: dotnet build -c Release --no-restore
+
+    - name: Pack
+      run: dotnet pack -c Release --no-build
+
+    - name: Get desired version
+      run: |
+        VERSION=$(grep -oP '<PackageUnifiedVersion>\K[^<]+' Directory.Build.props)
+        echo "DESIRED_VERSION=$VERSION" >> $GITHUB_ENV
+    
+    - name: Get published versions
+      run: |
+        VERSIONS=$(curl -s "$NUGET_SERVER/v3-flatcontainer/testresponses/index.json" | jq -r '.versions[]')
+        echo "EXISTING_VERSIONS=$VERSIONS" >> $GITHUB_ENV
+    
+    - name: Validate version
+      run: echo ${{ env.DESIRED_VERSION }}
+        

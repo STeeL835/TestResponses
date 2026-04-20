@@ -1,10 +1,12 @@
 <Project>
-  <!-- See https://aka.ms/dotnet/msbuild/customize for more details on customizing your build -->
   <PropertyGroup>
 
+    <!-- Does not affect the package target -->
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    
+    <PackageUnifiedVersion>0.2.0</PackageUnifiedVersion>
 
   </PropertyGroup>
   
