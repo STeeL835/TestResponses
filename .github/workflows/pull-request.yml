@@ -130,6 +130,7 @@ jobs:
 
     runs-on: ubuntu-latest
     needs: pack
+    environment: prerelease
 
     permissions:
       id-token: write  # enable GitHub OIDC token issuance for this job
