@@ -66,8 +66,12 @@ jobs:
       run: |
         VERSIONS=$(curl -s "$NUGET_API_SERVER/v3-flatcontainer/testresponses/index.json" | jq -r '.versions[]')
         echo "Existing versions:"
-        echo $VERSIONS
-        echo "EXISTING_VERSIONS=$VERSIONS" >> $GITHUB_ENV
+        echo "$VERSIONS"
+        {
+          echo 'EXISTING_VERSIONS<<EOF'
+          echo "$VERSIONS"
+          echo EOF
+        } >> "$GITHUB_ENV"
     
     - name: Pick a prerelease version to release
       run: | 
