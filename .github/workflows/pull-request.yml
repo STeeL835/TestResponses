@@ -143,6 +143,7 @@ jobs:
       uses: actions/download-artifact@v8
       with: 
         name: test-responses-packages-${{ github.sha }}
+        path: ./nuget/
     
     - name: NuGet login (OIDC → temp API key)
       uses: NuGet/login@v1
