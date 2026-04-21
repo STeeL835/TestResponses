@@ -5,8 +5,10 @@ on:
     branches: [ "main", "release/**" ]
 
 env:
-  # NUGET_SERVER: https://api.nuget.org
-  NUGET_SERVER: https://apiint.nugettest.org
+  # NUGET_API_SERVER: https://api.nuget.org
+  # NUGET_WEBSITE: https://www.nuget.org
+  NUGET_API_SERVER: https://apiint.nugettest.org
+  NUGET_WEBSITE: https://www.nugettest.org
 
 
 jobs:
@@ -62,7 +64,7 @@ jobs:
     
     - name: Get published versions
       run: |
-        VERSIONS=$(curl -s "$NUGET_SERVER/v3-flatcontainer/testresponses/index.json" | jq -r '.versions[]')
+        VERSIONS=$(curl -s "$NUGET_API_SERVER/v3-flatcontainer/testresponses/index.json" | jq -r '.versions[]')
         echo "Existing versions:"
         echo $VERSIONS
         echo "EXISTING_VERSIONS=$VERSIONS" >> $GITHUB_ENV
@@ -147,9 +149,9 @@ jobs:
       id: login
       with:
         user: ${{ secrets.NUGET_USER }} 
-        token-service-url: ${{ env.NUGET_SERVER }}/api/v2/token
-        audience: ${{ env.NUGET_SERVER }}
+        token-service-url: ${{ env.NUGET_WEBSITE }}/api/v2/token
+        audience: ${{ env.NUGET_WEBSITE }}
 
     - name: Push packages to NuGet
       run: echo ${{steps.login.outputs.NUGET_API_KEY}}
-      # run: dotnet nuget push ./nuget/ --source $NUGET_SERVER/v3/index.json --api-key ${{steps.login.outputs.NUGET_API_KEY}}                                                                                                                                                                                                                                       
+      # run: dotnet nuget push ./nuget/ --source $NUGET_API_SERVER/v3/index.json --api-key ${{steps.login.outputs.NUGET_API_KEY}}                                                                                                                                                                                                                                       
