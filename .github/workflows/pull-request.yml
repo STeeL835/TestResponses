@@ -6,7 +6,7 @@ on:
 
 env:
   # NUGET_SERVER: https://api.nuget.org
-  NUGET_SERVER: https://api.nugettest.org
+  NUGET_SERVER: https://apiint.nugettest.org
 
 
 jobs:
@@ -147,6 +147,9 @@ jobs:
       id: login
       with:
         user: ${{ secrets.NUGET_USER }} 
-      
+        token-service-url: $NUGET_SERVER/api/v2/token
+        audience: $NUGET_SERVER
+
     - name: Push packages to NuGet
-      run: dotnet nuget push ./nuget/ --source $NUGET_SERVER/v3/index.json --api-key ${{steps.login.outputs.NUGET_API_KEY}}                                                                                                                                                                                                                                       
+      run: echo ${{steps.login.outputs.NUGET_API_KEY}}
+      # run: dotnet nuget push ./nuget/ --source $NUGET_SERVER/v3/index.json --api-key ${{steps.login.outputs.NUGET_API_KEY}}                                                                                                                                                                                                                                       
