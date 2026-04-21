@@ -38,7 +38,7 @@ public class TestResponseTypesTests
             typeof(JsonPatchResponse),
             typeof(MarkdownResponse),
             typeof(CookieContentResponse),
-            typeof(NonIdenpotentReadResponse),
+            typeof(NonIdempotentReadResponse),
         ]);
 
         detector.List.Should().NotContain(typeof(InvalidCtorResponse), "it has incompatible ctor");

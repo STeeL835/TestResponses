@@ -1,0 +1,161 @@
+name: Pull Request
+
+on:
+  pull_request:
+    branches: [ "main", "release/**" ]
+
+env:
+  # NUGET_API_SERVER: https://api.nuget.org
+  # NUGET_WEBSITE: https://www.nuget.org
+  NUGET_API_SERVER: https://apiint.nugettest.org
+  NUGET_WEBSITE: https://int.nugettest.org
+
+
+jobs:
+  test:
+    name: Build and Test
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout 
+      uses: actions/checkout@v6
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: |
+          8.0.x
+          9.0.x
+
+    - name: Restore
+      run: dotnet restore TestResponses.slnx
+
+    - name: Build
+      run: dotnet build -c Release --no-restore
+
+    - name: Test
+      run: dotnet test -c Release --no-build --filter 'FullyQualifiedName!~.Example.'
+
+  pack: 
+    name: Pack packages
+
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+        
+    - name: Checkout 
+      uses: actions/checkout@v6
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: |
+          8.0.x
+          9.0.x
+
+    - name: Get desired version
+      run: |
+        VERSION=$(grep -oP '<PackageUnifiedVersion>\K[^<]+' Directory.Build.props)
+        echo "Desired version: $VERSION"
+        echo "DESIRED_VERSION=$VERSION" >> $GITHUB_ENV
+    
+    - name: Get published versions
+      run: |
+        VERSIONS=$(curl -s "$NUGET_API_SERVER/v3-flatcontainer/testresponses/index.json" | jq -r '.versions[]')
+        echo "Existing versions:"
+        echo "$VERSIONS"
+        {
+          echo 'EXISTING_VERSIONS<<EOF'
+          echo "$VERSIONS"
+          echo EOF
+        } >> "$GITHUB_ENV"
+    
+    - name: Pick a prerelease version to release
+      run: | 
+        SEMVER_REGEX="^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.#-]+)?$"
+        if [[ ! "$DESIRED_VERSION" =~ $SEMVER_REGEX ]]; then
+          echo "Error: DESIRED_VERSION ($DESIRED_VERSION) is not a valid format."
+          exit 1
+        fi
+
+        WORKING_VERSION="$DESIRED_VERSION"
+        if [[ "$WORKING_VERSION" != *"-"* ]]; then
+          WORKING_VERSION="${WORKING_VERSION}-prerelease.#"
+          echo "$DESIRED_VERSION is a release version. Adding prerelease: $WORKING_VERSION"
+        fi
+
+        FINAL_VERSION=""
+
+        if [[ "$WORKING_VERSION" == *"#"* ]]; then
+          counter=1
+          while true; do
+            candidate="${WORKING_VERSION//#/$counter}"
+            if ! echo "$EXISTING_VERSIONS" | grep -qx "$candidate"; then
+              FINAL_VERSION="$candidate"
+              break
+            fi
+            ((counter++))
+
+            if [ $counter -gt 100 ]; then
+              echo "Error: Could not find an available version after 100 attempts."
+              exit 1
+            fi
+          done
+        else
+          # Fixed prerelease (1.0.0-beta)
+          if echo "$EXISTING_VERSIONS" | grep -qx "$WORKING_VERSION"; then
+            echo "Error: Version $WORKING_VERSION is already released!"
+            exit 1
+          fi
+          FINAL_VERSION="$WORKING_VERSION"
+        fi
+
+        echo "Computed PACKAGE_VERSION: $FINAL_VERSION"
+        echo "PACKAGE_VERSION=$FINAL_VERSION" >> $GITHUB_ENV
+
+    - name: Restore
+      run: dotnet restore TestResponses.slnx
+
+    - name: Build
+      run: dotnet build -c Release --no-restore
+
+    - name: Pack
+      run: dotnet pack -c Release --no-build -p:PackageUnifiedVersion=${{ env.PACKAGE_VERSION }} --output ./nuget/
+
+    - name: Save package artifacts
+      uses: actions/upload-artifact@v7
+      with:
+        name: test-responses-packages-${{ github.sha }}
+        path: ./nuget/*
+
+  publish: 
+    name: Publish prerelease version
+
+    runs-on: ubuntu-latest
+    needs: pack
+    environment: prerelease
+
+    permissions:
+      id-token: write  # enable GitHub OIDC token issuance for this job
+  
+    steps:
+
+    - name: Get package artifacts
+      uses: actions/download-artifact@v8
+      with: 
+        name: test-responses-packages-${{ github.sha }}
+        path: ./nuget/
+    
+    - name: NuGet login (OIDC → temp API key)
+      uses: NuGet/login@v1
+      id: login
+      with:
+        user: ${{ secrets.NUGET_USER }} 
+        token-service-url: ${{ env.NUGET_WEBSITE }}/api/v2/token
+        audience: ${{ env.NUGET_WEBSITE }}
+
+    - name: Push packages to NuGet
+      run: dotnet nuget push ./nuget/*.nupkg --source $NUGET_API_SERVER/v3/index.json --api-key ${{steps.login.outputs.NUGET_API_KEY}}
