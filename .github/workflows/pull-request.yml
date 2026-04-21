@@ -8,7 +8,7 @@ env:
   # NUGET_API_SERVER: https://api.nuget.org
   # NUGET_WEBSITE: https://www.nuget.org
   NUGET_API_SERVER: https://apiint.nugettest.org
-  NUGET_WEBSITE: https://www.nugettest.org
+  NUGET_WEBSITE: https://int.nugettest.org
 
 
 jobs:
