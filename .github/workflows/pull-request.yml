@@ -32,7 +32,6 @@ jobs:
     name: Pack packages
 
     runs-on: ubuntu-latest
-    if: startsWith(github.head_ref, 'release/')
     needs: test
 
     steps:
