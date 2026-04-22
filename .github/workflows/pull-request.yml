@@ -23,7 +23,7 @@ jobs:
       uses: actions/checkout@v6
 
     - name: Initialize and Build
-      uses: ./.github/actions/build.yml
+      uses: ./.github/actions/build
 
     - name: Test
       run: dotnet test -c Release --no-build --filter 'FullyQualifiedName!~.Example.'
@@ -41,7 +41,7 @@ jobs:
       uses: actions/checkout@v6
 
     - name: Initialize and Build
-      uses: ./.github/actions/build.yml
+      uses: ./.github/actions/build
 
     - name: Get and validate package version
       run: |
@@ -58,7 +58,7 @@ jobs:
 
     - name: Pick a prerelease version to release
       id: pick-version
-      uses: ./.github/actions/pick-version.yml
+      uses: ./.github/actions/pick-version
       with: 
         desired-version: ${{ env.PRERELEASE_VERSION }}
         nuget-api-server: ${{ env.NUGET_API_SERVER }}
