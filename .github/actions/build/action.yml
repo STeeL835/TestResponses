@@ -1,0 +1,21 @@
+name: 'Init & Build'
+description: 'initializes working directory and builds the TestResponses'
+runs:
+  using: "composite"
+
+  steps:
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: |
+          8.0.x
+          9.0.x
+
+    - name: Restore
+      shell: bash
+      run: dotnet restore TestResponses.slnx
+
+    - name: Build
+      shell: bash
+      run: dotnet build -c Release --no-restore

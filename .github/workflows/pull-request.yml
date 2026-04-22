@@ -22,18 +22,8 @@ jobs:
     - name: Checkout 
       uses: actions/checkout@v6
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v5
-      with:
-        dotnet-version: |
-          8.0.x
-          9.0.x
-
-    - name: Restore
-      run: dotnet restore TestResponses.slnx
-
-    - name: Build
-      run: dotnet build -c Release --no-restore
+    - name: Initialize and Build
+      uses: ./.github/actions/build
 
     - name: Test
       run: dotnet test -c Release --no-build --filter 'FullyQualifiedName!~.Example.'
@@ -42,6 +32,7 @@ jobs:
     name: Pack packages
 
     runs-on: ubuntu-latest
+    if: startsWith(github.head_ref, 'release/')
     needs: test
 
     steps:
@@ -49,81 +40,31 @@ jobs:
     - name: Checkout 
       uses: actions/checkout@v6
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v5
-      with:
-        dotnet-version: |
-          8.0.x
-          9.0.x
+    - name: Initialize and Build
+      uses: ./.github/actions/build
 
-    - name: Get desired version
+    - name: Get and validate package version
       run: |
         VERSION=$(grep -oP '<PackageUnifiedVersion>\K[^<]+' Directory.Build.props)
-        echo "Desired version: $VERSION"
-        echo "DESIRED_VERSION=$VERSION" >> $GITHUB_ENV
-    
-    - name: Get published versions
-      run: |
-        VERSIONS=$(curl -s "$NUGET_API_SERVER/v3-flatcontainer/testresponses/index.json" | jq -r '.versions[]')
-        echo "Existing versions:"
-        echo "$VERSIONS"
-        {
-          echo 'EXISTING_VERSIONS<<EOF'
-          echo "$VERSIONS"
-          echo EOF
-        } >> "$GITHUB_ENV"
-    
-    - name: Pick a prerelease version to release
-      run: | 
-        SEMVER_REGEX="^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.#-]+)?$"
-        if [[ ! "$DESIRED_VERSION" =~ $SEMVER_REGEX ]]; then
-          echo "Error: DESIRED_VERSION ($DESIRED_VERSION) is not a valid format."
+        echo "Read version: $VERSION"
+
+        SEMVER_REGEX="^[0-9]+\.[0-9]+\.[0-9]+$"
+        if [[ ! "$VERSION" =~ $SEMVER_REGEX ]]; then
+          echo "Error: PackageUnifiedVersion ($VERSION) is not a valid release(!) SemVer."
           exit 1
         fi
 
-        WORKING_VERSION="$DESIRED_VERSION"
-        if [[ "$WORKING_VERSION" != *"-"* ]]; then
-          WORKING_VERSION="${WORKING_VERSION}-prerelease.#"
-          echo "$DESIRED_VERSION is a release version. Adding prerelease: $WORKING_VERSION"
-        fi
+        echo "PRERELEASE_VERSION=$VERSION-prerelease.#" >> $GITHUB_ENV
 
-        FINAL_VERSION=""
-
-        if [[ "$WORKING_VERSION" == *"#"* ]]; then
-          counter=1
-          while true; do
-            candidate="${WORKING_VERSION//#/$counter}"
-            if ! echo "$EXISTING_VERSIONS" | grep -qx "$candidate"; then
-              FINAL_VERSION="$candidate"
-              break
-            fi
-            ((counter++))
-
-            if [ $counter -gt 100 ]; then
-              echo "Error: Could not find an available version after 100 attempts."
-              exit 1
-            fi
-          done
-        else
-          # Fixed prerelease (1.0.0-beta)
-          if echo "$EXISTING_VERSIONS" | grep -qx "$WORKING_VERSION"; then
-            echo "Error: Version $WORKING_VERSION is already released!"
-            exit 1
-          fi
-          FINAL_VERSION="$WORKING_VERSION"
-        fi
-
-        echo "Computed PACKAGE_VERSION: $FINAL_VERSION"
-        echo "PACKAGE_VERSION=$FINAL_VERSION" >> $GITHUB_ENV
-
-    - name: Restore
-      run: dotnet restore TestResponses.slnx
-
-    - name: Build
-      run: dotnet build -c Release --no-restore
+    - name: Pick a prerelease version to release
+      id: pick-version
+      uses: ./.github/actions/pick-version
+      with: 
+        desired-version: ${{ env.PRERELEASE_VERSION }}
+        nuget-api-server: ${{ env.NUGET_API_SERVER }}
 
     - name: Pack
-      run: dotnet pack -c Release --no-build -p:PackageUnifiedVersion=${{ env.PACKAGE_VERSION }} --output ./nuget/
+      run: dotnet pack -c Release --no-build -p:PackageUnifiedVersion=${{ steps.pick-version.outputs.available-version }} --output ./nuget/
 
     - name: Save package artifacts
       uses: actions/upload-artifact@v7
@@ -158,4 +99,4 @@ jobs:
         audience: ${{ env.NUGET_WEBSITE }}
 
     - name: Push packages to NuGet
-      run: dotnet nuget push ./nuget/*.nupkg --source $NUGET_API_SERVER/v3/index.json --api-key ${{steps.login.outputs.NUGET_API_KEY}}
+      run: dotnet nuget push ./nuget/*.nupkg --source $NUGET_API_SERVER/v3/index.json --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
