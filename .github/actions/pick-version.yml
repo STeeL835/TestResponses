@@ -1,0 +1,95 @@
+name: 'Pick package version'
+description: 'Checks if the version is available, or increments till one is found if contains #'
+
+inputs:
+  desired-version:  # id of input
+    description: 'Version to use when publishing. Use # to search for available increment (1.0.0-rc.#)'
+    required: true
+  nuget-api-server:
+    description: 'A nuget server to check existing versions'
+    required: true
+    default: 'https://api.nuget.org'
+outputs:
+  available-version:
+    description: "A non-existing version if found"
+    value: ${{ steps.find-version.outputs.available-version }}
+
+runs:
+  using: "composite"
+
+  steps:
+
+    - name: Get published versions
+      id: get-published-versions
+      shell: bash
+      run: |
+        VERSIONS=$(curl -s "${{ inputs.nuget-api-server }}/v3-flatcontainer/testresponses/index.json" | jq -r '.versions[]')
+        echo "Existing versions:"
+        echo "$VERSIONS"
+        {
+          echo 'existing-versions<<EOF'
+          echo "$VERSIONS"
+          echo EOF
+        } >> $GITHUB_OUTPUT
+
+    - name: Pick a prerelease version to release
+      id: find-version
+      shell: bash
+      run: | 
+        SEMVER_REGEX="^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.#-]+)?$"
+        if [[ ! "$DESIRED_VERSION" =~ $SEMVER_REGEX ]]; then
+          echo "Error: DESIRED_VERSION ($DESIRED_VERSION) is not a valid SemVer."
+          exit 1
+        fi
+
+        WORKING_VERSION="$DESIRED_VERSION"
+        FINAL_VERSION=""
+
+        if [[ "$WORKING_VERSION" == *"#"* ]]; then
+          counter=1
+          while true; do
+            candidate="${WORKING_VERSION//#/$counter}"
+            if ! echo "${{ steps.get-published-versions.outputs.existing-versions}}" | grep -qx "$candidate"; then
+              FINAL_VERSION="$candidate"
+              break
+            fi
+            ((counter++))
+
+            if [ $counter -gt 100 ]; then
+              echo "Error: Could not find an available version after 100 attempts."
+              exit 1
+            fi
+          done
+        else
+          # Fixed prerelease (1.0.0-beta)
+          if echo "${{ steps.get-published-versions.outputs.existing-versions}}" | grep -qx "$WORKING_VERSION"; then
+            echo "Error: Version $WORKING_VERSION is already released!"
+            exit 1
+          fi
+          FINAL_VERSION="$WORKING_VERSION"
+        fi
+
+        echo "Found available non-existing version: $FINAL_VERSION"
+        echo "available-version=$FINAL_VERSION" >> $GITHUB_OUTPUT
+
+
+    - name: Set Greeting
+      run: echo "Hello $INPUT_WHO_TO_GREET."
+      env:
+        INPUT_WHO_TO_GREET: ${{ inputs.who-to-greet }}
+
+    - name: Random Number Generator
+      id: random-number-generator
+      run: echo "random-number=$(echo $RANDOM)" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Set GitHub Path
+      run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
+      shell: bash
+      env:
+        GITHUB_ACTION_PATH: ${{ github.action_path }}
+
+    - name: Run goodbye.sh
+      run: goodbye.sh
+      shell: bash
+
