@@ -36,13 +36,15 @@ runs:
       id: find-version
       shell: bash
       run: | 
+        echo "Validating ${{ inputs.desired-version }}"
+        
         SEMVER_REGEX="^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.#-]+)?$"
-        if [[ ! "$DESIRED_VERSION" =~ $SEMVER_REGEX ]]; then
-          echo "Error: DESIRED_VERSION ($DESIRED_VERSION) is not a valid SemVer."
+        if [[ ! "${{ inputs.desired-version }}" =~ $SEMVER_REGEX ]]; then
+          echo "Error: desired version (${{ inputs.desired-version }}) is not a valid SemVer."
           exit 1
         fi
 
-        WORKING_VERSION="$DESIRED_VERSION"
+        WORKING_VERSION="${{ inputs.desired-version }}"
         FINAL_VERSION=""
 
         if [[ "$WORKING_VERSION" == *"#"* ]]; then
