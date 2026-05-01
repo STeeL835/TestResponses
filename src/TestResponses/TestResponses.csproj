@@ -1,8 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net9.0</TargetFrameworks> <!-- do not forget to update workflow versions-->
-    <TargetFramework></TargetFramework> <!-- reset build props -->
 
     <PackageId>TestResponses</PackageId> 
     <Version>$(PackageUnifiedVersion)</Version>
