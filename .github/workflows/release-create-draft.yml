@@ -1,0 +1,56 @@
+name: Create release draft
+
+on: 
+  push:
+    branches: [ "feature/release-pipeline" ]
+
+jobs:
+
+  create-release-draft:
+    name: Create release draft
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+    
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+
+    - name: Initialize and Build
+      uses: ./.github/actions/build
+
+    - name: Pack
+      run: dotnet pack -c Release --no-build --output ./packages/
+
+    - name: Get and validate package version
+      id: get-version
+      run: |
+        VERSION=$(grep -oP '<PackageUnifiedVersion>\K[^<]+' Directory.Build.props)
+        echo "package-version=$VERSION" >> $GITHUB_OUTPUT
+
+    - name: Get last commit message
+      id: get-commit-message
+      run: |
+        # %s - subject, %b - body, %B - subject AND body
+        MSG=$(git log -1 --pretty=%b)
+        {
+          echo 'changelog<<EOF'
+          echo "$MSG"
+          echo EOF
+        } >> $GITHUB_OUTPUT
+      
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ steps.get-version.outputs.package-version }}
+        body: ${{ steps.get-commit-message.outputs.changelog }}
+        files: |
+          ./packages/**
+        draft: true
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
