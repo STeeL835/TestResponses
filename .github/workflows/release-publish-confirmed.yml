@@ -43,4 +43,4 @@ jobs:
         audience: ${{ env.NUGET_WEBSITE }}
     
     - name: Push packages to NuGet
-      run: dotnet nuget push ./nuget/*.nupkg --source $NUGET_API_SERVER/v3/index.json --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
+      run: dotnet nuget push ./packages/*.nupkg --source $NUGET_API_SERVER/v3/index.json --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
