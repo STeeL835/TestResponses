@@ -1,16 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
-    <TargetFramework></TargetFramework> <!-- reset build props -->
 
     <PackageId>TestResponses</PackageId> 
-    <Version>0.1.0</Version>
+    <Version>$(PackageUnifiedVersion)</Version>
     <Authors>Dmitrii Frolov</Authors>
-    <Description>A family of HttpResponseMessage decorators that make testing APIs easier and more informative</Description>
+    <Description>Readable, contextual API test responses for .NET</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/steel835/TestResponses</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReleaseNotes Condition="'$(RELEASE_NOTES)' != ''">$(RELEASE_NOTES)</PackageReleaseNotes>
 
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>

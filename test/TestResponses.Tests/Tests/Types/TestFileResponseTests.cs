@@ -10,6 +10,79 @@ namespace TestResponses.Tests.Tests.Types;
 
 public class TestFileResponseTests
 {
+    #region FileName
+    
+    [Fact]
+    public async Task FileName_ResponseIsNotRead_ShouldReadFileName()
+    {
+        var httpResponse = await Receive("info.txt", [4, 8, 15, 16, 23, 42]);
+        
+        var testResponse = new TestFileResponse(httpResponse);
+
+        testResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        testResponse.IsRead.Should().BeFalse();
+        testResponse.FileName.Should().Be("info.txt");
+    }
+    
+    [Fact]
+    public async Task FileName_FilenamesDiffer_ShouldUseItsOwnValue()
+    {
+        var httpResponse = await Receive(fileName: "ascii", fileNameStar: "utf", fileContent: [4, 8, 15, 16, 23, 42]);
+        
+        var testResponse = new TestFileResponse(httpResponse);
+
+        testResponse.FileName.Should().Be("ascii");
+    }
+    
+    [Fact]
+    public async Task FileName_FilenamesMissing_ShouldReturnNull()
+    {
+        var httpResponse = await Receive(fileName: null, fileNameStar: null, fileContent: [4, 8, 15, 16, 23, 42]);
+        
+        var testResponse = new TestFileResponse(httpResponse);
+
+        testResponse.FileName.Should().BeNull();
+    }
+
+    #endregion
+    
+    #region FileNameStar
+    
+    [Fact]
+    public async Task FileNameStar_ResponseIsNotRead_ShouldReadFileName()
+    {
+        var httpResponse = await Receive(fileName: "info.txt", fileNameStar: "info.txt", fileContent: [4, 8, 15, 16, 23, 42]);
+        
+        var testResponse = new TestFileResponse(httpResponse);
+
+        testResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        testResponse.IsRead.Should().BeFalse();
+        testResponse.FileNameStar.Should().Be("info.txt");
+    }
+    
+    [Fact]
+    public async Task FileNameStar_FilenamesDiffer_ShouldUseItsOwnValue()
+    {
+        var httpResponse = await Receive(fileName: "ascii", fileNameStar: "utf", fileContent: [4, 8, 15, 16, 23, 42]);
+        
+        var testResponse = new TestFileResponse(httpResponse);
+
+        testResponse.FileNameStar.Should().Be("utf");
+    }
+    
+    [Fact]
+    public async Task FileNameStar_FilenamesMissing_ShouldReturnNull()
+    {
+        var httpResponse = await Receive(fileName: null, fileNameStar: null, fileContent: [4, 8, 15, 16, 23, 42]);
+        
+        var testResponse = new TestFileResponse(httpResponse);
+
+        testResponse.FileNameStar.Should().BeNull();
+    }
+
+    #endregion
+
+    
     #region AsFile
 
     [Fact]
@@ -27,32 +100,41 @@ public class TestFileResponseTests
     }
     
     [Fact]
-    public async Task AsFile_ResponseIsRead_FilenamesDiffer_ShouldUseStarName()
+    public async Task AsFile_FilenamesDiffer_ShouldUseStarName()
     {
         var httpResponse = await Receive(fileName: "wrong", fileNameStar: "right", fileContent: [4, 8, 15, 16, 23, 42]);
         
         var testResponse = new TestFileResponse(httpResponse);
         await testResponse.Read();
 
-        testResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        testResponse.IsRead.Should().BeTrue();
         testResponse.AsFile.Name.Should().Be("right");
         testResponse.AsFile.Stream.ToByteArray().Should().BeSubsetOf([4, 8, 15, 16, 23, 42]);
     }
-
+    
     [Fact]
-    public async Task AsFile_ResponseIsRead_FilenameStarMissing_ShouldUseRegularName()
+    public async Task AsFile_FilenameStarMissing_ShouldUseRegularName()
     {
         var httpResponse = await Receive(fileName: "old", fileNameStar: null, fileContent: [4, 8, 15, 16, 23, 42]);
         
         var testResponse = new TestFileResponse(httpResponse);
         await testResponse.Read();
 
-        testResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        testResponse.IsRead.Should().BeTrue();
         testResponse.AsFile.Name.Should().Be("old");
         testResponse.AsFile.Stream.ToByteArray().Should().BeSubsetOf([4, 8, 15, 16, 23, 42]);
     }
+    
+    [Fact]
+    public async Task AsFile_BothFilenamesMissing_ShouldUseNullName()
+    {
+        var httpResponse = await Receive(fileName: null, fileNameStar: null, fileContent: [4, 8, 15, 16, 23, 42]);
+        
+        var testResponse = new TestFileResponse(httpResponse);
+        await testResponse.Read();
+
+        testResponse.AsFile.Name.Should().BeNull();
+        testResponse.AsFile.Stream.ToByteArray().Should().BeSubsetOf([4, 8, 15, 16, 23, 42]);
+    }
+
     
     [Fact]
     public async Task AsFile_ResponseNotRead_ShouldThrowException()
@@ -135,6 +217,26 @@ public class TestFileResponseTests
 
     #endregion
     
+    #region Configuration
+
+    [Fact]
+    public async Task Config_ReplacedFormatter_ShouldUseProvidedFormatter()
+    {
+        var httpResponse = await Receive("info.txt", [4, 8, 15, 16, 23, 42]);
+
+        var testResponse = new TestFileResponse(httpResponse)
+        {
+            FileConfig = new()
+            {
+                Formatter = new TestResponseDelegateFormatter<TestFileResponse>(r => "format")
+            }
+        };
+        await testResponse.Read();
+
+        testResponse.ToString().Should().Be("format");
+    }
+    
+    #endregion
     
     
     private Task<HttpResponseMessage> Receive(string? fileName, byte[] fileContent,

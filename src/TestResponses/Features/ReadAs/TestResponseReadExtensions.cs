@@ -7,7 +7,7 @@ public static class TestResponseReadExtensions
         UniStatusCode? expectedStatusCode = null) 
         where TTestResponse : TestResponse
     {
-        return await ReadAs<TTestResponse>(await responseTask, expectedStatusCode);
+        return await ReadAs<TTestResponse>(await responseTask.ConfigureAwait(false), expectedStatusCode).ConfigureAwait(false);
     }
     
     public static async Task<TTestResponse> ReadAs<TTestResponse>(
@@ -20,7 +20,7 @@ public static class TestResponseReadExtensions
             var testResponse = Activator.CreateInstance(typeof(TTestResponse), httpResponse) as TTestResponse;
             testResponse!.ExpectedStatusCode = expectedStatusCode;
             
-            await testResponse.Read();
+            await testResponse.Read().ConfigureAwait(false);
             return testResponse;
         }
         catch (MissingMethodException ex)

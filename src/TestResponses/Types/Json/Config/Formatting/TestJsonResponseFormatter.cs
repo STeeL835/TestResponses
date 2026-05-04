@@ -1,8 +1,11 @@
 ﻿namespace TestResponses.Json;
 
-public static class TestJsonResponseFormatter
+/// <summary>
+/// Default formatter for JSON responses.
+/// </summary>
+public class TestJsonResponseFormatter : ITestResponseFormatter<TestJsonResponse>
 {
-    public static string Format(TestJsonResponse response)
+    public string Format(TestJsonResponse response)
     {
         return $"""
             {TestResponseFormatter.FormatStatusCodeInfo(response)}
@@ -28,7 +31,7 @@ public static class TestJsonResponseFormatter
         serializer ??= TestJsonResponse.GlobalJsonConfig.Serializer;
         
         serializer.TryIndent(json, out var indentedJson);
-
+        
         return indentedJson;
     }
 }

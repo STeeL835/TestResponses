@@ -1,0 +1,103 @@
+name: Pull Request
+
+on:
+  pull_request:
+    branches: [ "main", "release/**" ]
+
+env:
+  NUGET_API_SERVER: https://api.nuget.org
+  NUGET_WEBSITE: https://www.nuget.org
+  # NUGET_API_SERVER: https://apiint.nugettest.org
+  # NUGET_WEBSITE: https://int.nugettest.org
+
+
+jobs:
+  test:
+    name: Build and Test
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout 
+      uses: actions/checkout@v6
+
+    - name: Initialize and Build
+      uses: ./.github/actions/build
+
+    - name: Test
+      run: dotnet test -c Release --no-build --filter 'FullyQualifiedName!~.Example.'
+
+  pack: 
+    name: Pack packages
+
+    runs-on: ubuntu-latest
+    if: startsWith(github.head_ref, 'release/')
+    needs: test
+
+    steps:
+        
+    - name: Checkout 
+      uses: actions/checkout@v6
+
+    - name: Initialize and Build
+      uses: ./.github/actions/build
+
+    - name: Get and validate package version
+      run: |
+        VERSION=$(grep -oP '<PackageUnifiedVersion>\K[^<]+' Directory.Build.props)
+        echo "Read version: $VERSION"
+
+        SEMVER_REGEX="^[0-9]+\.[0-9]+\.[0-9]+$"
+        if [[ ! "$VERSION" =~ $SEMVER_REGEX ]]; then
+          echo "Error: PackageUnifiedVersion ($VERSION) is not a valid release(!) SemVer."
+          exit 1
+        fi
+
+        echo "PRERELEASE_VERSION=$VERSION-prerelease.#" >> $GITHUB_ENV
+
+    - name: Pick a prerelease version to release
+      id: pick-version
+      uses: ./.github/actions/pick-version
+      with: 
+        desired-version: ${{ env.PRERELEASE_VERSION }}
+        nuget-api-server: ${{ env.NUGET_API_SERVER }}
+
+    - name: Pack
+      run: dotnet pack -c Release --no-build -p:PackageUnifiedVersion=${{ steps.pick-version.outputs.available-version }} --output ./nuget/
+
+    - name: Save package artifacts
+      uses: actions/upload-artifact@v7
+      with:
+        name: test-responses-packages-v${{ steps.pick-version.outputs.available-version }}-${{ github.sha }}
+        path: ./nuget/*
+
+  publish: 
+    name: Publish prerelease version
+
+    runs-on: ubuntu-latest
+    needs: pack
+    environment: prerelease
+
+    permissions:
+      id-token: write  # enable GitHub OIDC token issuance for this job
+  
+    steps:
+
+    - name: Get package artifacts
+      uses: actions/download-artifact@v8
+      with:
+        pattern: test-responses-packages-*-${{ github.sha }}
+        merge-multiple: true
+        path: ./nuget/
+    
+    - name: NuGet login (OIDC → temp API key)
+      uses: NuGet/login@v1
+      id: login
+      with:
+        user: ${{ secrets.NUGET_USER }} 
+        token-service-url: ${{ env.NUGET_WEBSITE }}/api/v2/token
+        audience: ${{ env.NUGET_WEBSITE }}
+
+    - name: Push packages to NuGet
+      run: dotnet nuget push ./nuget/*.nupkg --source $NUGET_API_SERVER/v3/index.json --api-key ${{ steps.login.outputs.NUGET_API_KEY }}

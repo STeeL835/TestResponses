@@ -1,8 +1,11 @@
 ﻿namespace TestResponses.Text;
 
-public static class TestTextResponseFormatter
+/// <summary>
+/// Default formatter for text responses.
+/// </summary>
+public class TestTextResponseFormatter : ITestResponseFormatter<TestTextResponse>
 {
-    public static string Format(TestTextResponse response)
+    public string Format(TestTextResponse response)
     {
         return $"""
             {TestResponseFormatter.FormatStatusCodeInfo(response)}

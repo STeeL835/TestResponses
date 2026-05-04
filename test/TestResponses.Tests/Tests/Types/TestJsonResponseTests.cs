@@ -114,8 +114,10 @@ public class TestJsonResponseTests
     [Theory]
     [InlineData("""[{ "City": "Saratov", "Date": "2025-09-11", "TemperatureC": 6 }]""")] // array
     [InlineData("""{ "Town": "Saratov", "Date": "2025-09-11", "TemperatureC": 6 }""")] // unknown property
+#if NET9_0_OR_GREATER
     [InlineData("""{ "City": "Saratov", "TemperatureC": 6 }""")] // missing non-null struct property
     [InlineData("""{ "City": null, "Date": "2025-09-11", "TemperatureC": 6 }""")] // missing reference property without `?`
+#endif
     public async Task AsDto_ResponseNotDeserialized_ShouldThrowException(string json)
     {
         var httpResponse = await Receive(json);
@@ -322,7 +324,7 @@ public class TestJsonResponseTests
     #region Configuration
 
     [Fact]
-    public async Task Config_ReplacedSerializer_ShouldUseProvideSerializer()
+    public async Task Config_ReplacedFormatter_ShouldUseProvidedFormatter()
     {
         const string json = """{ "City": "Saratov", "Date": "2025-09-11", "TemperatureC": 6 }""";
 
@@ -332,7 +334,26 @@ public class TestJsonResponseTests
         {
             JsonConfig = new()
             {
-                Serializer = new FaketonsoftJsonSerializer()
+                Formatter = new TestResponseDelegateFormatter<TestJsonResponse>(r => "format")
+            }
+        };
+        await testResponse.Read();
+
+        testResponse.ToString().Should().Be("format");
+    }
+
+    [Fact]
+    public async Task Config_ReplacedSerializer_ShouldUseProvidedSerializer()
+    {
+        const string json = """{ "City": "Saratov", "Date": "2025-09-11", "TemperatureC": 6 }""";
+
+        var httpResponse = await Receive(json);
+
+        var testResponse = new TestJsonResponse<int>(httpResponse)
+        {
+            JsonConfig = new()
+            {
+                Serializer = new FaketonsoftJsonSerializer(),
             }
         };
         await testResponse.Read();

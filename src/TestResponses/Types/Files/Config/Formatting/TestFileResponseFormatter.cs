@@ -1,8 +1,11 @@
 ﻿namespace TestResponses.Files;
 
-public static class TestFileResponseFormatter
+/// <summary>
+/// Default formatter for file responses.
+/// </summary>
+public class TestFileResponseFormatter : ITestResponseFormatter<TestFileResponse>
 {
-    public static string Format(TestFileResponse response)
+    public string Format(TestFileResponse response)
     {
         return $"""
             {TestResponseFormatter.FormatStatusCodeInfo(response)}

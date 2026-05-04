@@ -1,5 +1,8 @@
 ﻿namespace TestResponses.Json;
 
+/// <summary>
+/// Contract for JSON serializers used by <see cref="TestJsonResponse" />.
+/// </summary>
 public interface ITestJsonResponseSerializer
 {
     /// <summary>

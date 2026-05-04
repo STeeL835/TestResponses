@@ -1,8 +1,11 @@
 ﻿namespace TestResponses.Streams;
 
-public static class TestStreamResponseFormatter
+/// <summary>
+/// Default formatter for stream responses.
+/// </summary>
+public class TestStreamResponseFormatter : ITestResponseFormatter<TestStreamResponse>
 {
-    public static string Format(TestStreamResponse response)
+    public string Format(TestStreamResponse response)
     {
         return $"""
             {TestResponseFormatter.FormatStatusCodeInfo(response)}
