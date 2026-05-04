@@ -25,20 +25,26 @@ public class TestFileResponse(HttpResponseMessage httpResponse) : TestStreamResp
     /// The downloaded file payload for attachment responses.
     /// </summary>
     public ResponseFile AsFile => _file.GetOrThrow()!;
-    
+
+
+    /// <summary>
+    /// The content disposition property <c>filename*</c>, if it is set.
+    /// To get a file name with a fallback to regular <c>filename</c>, use <see cref="AsFile"/> object (<see cref="ResponseFile.Name"/>).
+    /// </summary>
+    public string? FileNameStar { get; } = httpResponse.Content.Headers.ContentDisposition?.FileNameStar;
     
     /// <summary>
-    /// The file name from the response content disposition, if available.
+    /// The content disposition property <c>filename</c>, if it is set.
+    /// To get a file name with preference to advanced <c>filename*</c>, use <see cref="AsFile"/> object (<see cref="ResponseFile.Name"/>).
     /// </summary>
-    public string? FileName { get; } =
-        httpResponse.Content.Headers.ContentDisposition?.FileNameStar
-           ?? httpResponse.Content.Headers.ContentDisposition?.FileName;
+    public string? FileName { get; } = httpResponse.Content.Headers.ContentDisposition?.FileName;
 
+    
     protected override async Task ReadResponse()
     {
         await base.ReadResponse();
 
-        _file = ResponseValue.Create(this, () => new ResponseFile(AsStream, FileName));
+        _file = ResponseValue.Create(this, () => new ResponseFile(AsStream, FileNameStar ?? FileName));
     }
     
     internal override bool CanHandleContent() => ContentType is not null 
