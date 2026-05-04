@@ -6,10 +6,10 @@ on:
       - published
 
 env:
-  NUGET_API_SERVER: https://api.nuget.org
-  NUGET_WEBSITE: https://www.nuget.org
-  # NUGET_API_SERVER: https://apiint.nugettest.org
-  # NUGET_WEBSITE: https://int.nugettest.org
+  # NUGET_API_SERVER: https://api.nuget.org
+  # NUGET_WEBSITE: https://www.nuget.org
+  NUGET_API_SERVER: https://apiint.nugettest.org
+  NUGET_WEBSITE: https://int.nugettest.org
 
 jobs:
 
@@ -42,7 +42,5 @@ jobs:
         token-service-url: ${{ env.NUGET_WEBSITE }}/api/v2/token
         audience: ${{ env.NUGET_WEBSITE }}
     
-    - name: Check files
-      run: ls -R ./packages
-    #- name: Push packages to NuGet
-    #  run: dotnet nuget push ./nuget/*.nupkg --source $NUGET_API_SERVER/v3/index.json --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
+    - name: Push packages to NuGet
+      run: dotnet nuget push ./nuget/*.nupkg --source $NUGET_API_SERVER/v3/index.json --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
