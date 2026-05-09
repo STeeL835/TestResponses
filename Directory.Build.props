@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     
-    <PackageUnifiedVersion>0.2.0</PackageUnifiedVersion>
+    <PackageUnifiedVersion>0.2.1</PackageUnifiedVersion>
 
   </PropertyGroup>
   

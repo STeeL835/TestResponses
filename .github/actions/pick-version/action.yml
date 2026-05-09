@@ -54,6 +54,7 @@ runs:
           exit 1;
         fi
 
+        echo "Picking a prerelease version"
         if [[ "$WORKING_VERSION" == *"#"* ]]; then
           counter=1
           while true; do
