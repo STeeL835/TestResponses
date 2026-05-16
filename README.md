@@ -27,7 +27,11 @@ var response = await _weatherApi.GetTodayWeather("Saratov");
 response.AsDto!.City.Should().Be("Saratov");
 ```
 
-The main value is in failure messages. Instead of a generic `HttpRequestException`, TestResponses shows response context, which makes it easier to understand the failure without debugging:
+- Less boilerplate
+- DTO model for happy paths
+- Raw HttpResponseMessage property for corner cases
+- Does not fail the test right away so you can test 4xx responses with the same object, without try-catch statement
+- But main value is in failure messages: Instead of a generic `HttpRequestException`, TestResponses shows response context, which makes it easier to understand the failure without debugging:
 
 ```
 TestResponses.TestResponseAssertionException
@@ -44,9 +48,7 @@ Response:
 }
 ```
 
-It is not restricted to 200 status code - you can assert any status code you need.
-
-It is not restricted to JSON responses either, because TestResponses - is a family of response types that support different responses - from empty to JSON and files. And they are designed to be extensible, so you can create a type that fits your scenario.
+And it's not restricted to JSON responses, because TestResponses is a family of response types - from empty to JSON and files. They are also designed to be extensible and configurable, so you can create a type that fits your scenario, or modify behavior of existing one.
 
 
 
@@ -89,4 +91,4 @@ For more information you can read the docs. \
 [Docs →](https://github.com/STeeL835/TestResponses/wiki)
 
 Project also has usage examples with failing tests that you can run and play around with \
-[Examples →](/examples/TestResponses.Example.IntegrationTests/)
+[Examples →](https://github.com/STeeL835/TestResponses/tree/main/examples/TestResponses.Example.IntegrationTests/)

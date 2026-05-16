@@ -45,13 +45,21 @@ runs:
         fi
 
         WORKING_VERSION="${{ inputs.desired-version }}"
+        RELEASE_VERSION="${WORKING_VERSION%%-*}"
         FINAL_VERSION=""
+        
+        echo "Checking if desired release version was already published"
+        if echo "${{ steps.get-published-versions.outputs.existing-versions }}" | grep -qx "$RELEASE_VERSION"; then
+          echo "Error: $RELEASE_VERSION is already published, can't pick a prerelease version"
+          exit 1;
+        fi
 
+        echo "Picking a prerelease version"
         if [[ "$WORKING_VERSION" == *"#"* ]]; then
           counter=1
           while true; do
             candidate="${WORKING_VERSION//#/$counter}"
-            if ! echo "${{ steps.get-published-versions.outputs.existing-versions}}" | grep -qx "$candidate"; then
+            if ! echo "${{ steps.get-published-versions.outputs.existing-versions }}" | grep -qx "$candidate"; then
               FINAL_VERSION="$candidate"
               break
             fi
